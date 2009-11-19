@@ -5,7 +5,7 @@
  */
 function openid_provider_sso_strongarm() {
   return array (
-    'pathauto_openid_provider_pattern' => 'openid/[user]',
+    'pathauto_openid_provider_pattern' => 'openid/[user-raw]',
   );
 }
 
