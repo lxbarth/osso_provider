@@ -9,14 +9,13 @@
  */
 function openidp_profile_modules() {
   return array(
-    'color', 
-    'comment', 
-    'help', 
-    'menu', 
-    'taxonomy', 
-    'dblog', 
-    'openid', 
-    'openid_provider', 
+    'color',
+    'comment',
+    'help',
+    'menu',
+    'taxonomy',
+    'dblog',
+    'openid_provider',
     'xrds_simple',
   );
 }
@@ -132,21 +131,21 @@ function openidp_profile_tasks(&$task, $url) {
         'min_word_count' => '',
       ),
     );
-  
+
     foreach ($types as $type) {
       $type = (object) _node_type_set_defaults($type);
       node_type_save($type);
     }
-  
+
     // Default page to not be promoted and have comments disabled.
     variable_set('node_options_page', array('status'));
     variable_set('comment_page', COMMENT_NODE_DISABLED);
-  
+
     // Don't display date and author information for page nodes by default.
     $theme_settings = variable_get('theme_settings', array());
     $theme_settings['toggle_node_info_page'] = FALSE;
     variable_set('theme_settings', $theme_settings);
-  
+
     // Update the menu router information.
     menu_rebuild();
   }
@@ -154,7 +153,7 @@ function openidp_profile_tasks(&$task, $url) {
   if ('configure') {
     // Clear caches.
     drupal_flush_all_caches();
-  
+
     // Enable the right theme. This must be handled after drupal_flush_all_caches()
     // which rebuilds the system table based on a stale static cache,
     // blowing away our changes.
