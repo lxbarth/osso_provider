@@ -17,6 +17,9 @@ function openidp_profile_modules() {
     'dblog',
     'openid_provider',
     'xrds_simple',
+    'openid_provider_trusted',
+    'pathauto',
+    'token',
   );
 }
 
