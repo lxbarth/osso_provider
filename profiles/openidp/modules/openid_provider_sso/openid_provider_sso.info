@@ -3,3 +3,4 @@ description = "Set up a trusted web of sites and use OpenID to provide simple Si
 core = 6.x
 dependencies[] = openid_provider
 dependencies[] = strongarm
+dependencies[] = pathauto
