@@ -20,6 +20,7 @@ function openidp_profile_modules() {
     'openid_provider_trusted',
     'pathauto',
     'token',
+    'strongarm',
   );
 }
 
