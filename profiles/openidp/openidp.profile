@@ -8,7 +8,7 @@
  *   An array of modules to enable.
  */
 function openidp_profile_modules() {
-  return array('color', 'comment', 'help', 'menu', 'taxonomy', 'dblog', 'openid', 'openid_provider');
+  return array('color', 'comment', 'help', 'menu', 'taxonomy', 'dblog', 'openid', 'openid_provider', 'xrds_simple');
 }
 
 /**
