@@ -17,7 +17,7 @@ function openid_provider_sso_strongarm() {
 function openid_provider_sso_user($op, &$edit, &$account) {
   if ($op == 'insert') {
     module_load_include('inc', 'openid_provider');
-    foreach (variable_get('openid_provider_trusted_rps', array()) as $realm) {
+    foreach (variable_get('openid_provider_sso_rps', array()) as $realm) {
       _openid_provider_rp_save($account->uid, $realm, TRUE);
     }
   }
