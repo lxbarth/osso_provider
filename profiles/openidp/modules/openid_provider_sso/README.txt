@@ -1,10 +1,14 @@
 
 
-OpenID Provider Trusted Web
-===========================
+OpenID Simple Sign-On (Provider)
+================================
 
 Add trusted sites to a Drupal OpenID provider. Users enjoy a simplified sign on
 process between trusted sites.
+
+Note: this module does not provide true *Single* Sign-On functionality but a
+largely simplified sign on experience for webs of trusted sites. Hence the name
+*Simple* Sign-On.
 
 Installation
 ============
@@ -12,6 +16,6 @@ Installation
 Install this module and dependencies. In your site's settings.php file, define a
 list of trusted Relying Parties:
 
-$conf['openid_provider_trusted_rps'] = array(
+$conf['openid_provider_sso_rps'] = array(
   'http://localhost/rp/'
 );
