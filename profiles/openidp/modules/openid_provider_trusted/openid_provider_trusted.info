@@ -1,0 +1,5 @@
+name = "OpenID Trusted Web (Provider)"
+description = "Extension to Openid Provider: Configure a list of trusted OpenID Relying Parties for simplified sign on."
+core = 6.x
+php = 5.2
+dependencies[] = openid_provider
