@@ -24,7 +24,9 @@ function openid_provider_sso_user($op, &$edit, &$account) {
   switch ($op) {
     case 'insert':
     case 'update':
-      // Add trusted Relying Parties to a new user on creation.
+      // Add trusted Relying Parties to a new user on creation. This will
+      // eliminate the manual confirmation step required when first time logging
+      // on to relying parties.
       module_load_include('inc', 'openid_provider');
       foreach (variable_get('openid_provider_sso_rps', array()) as $relying_party) {
         _openid_provider_rp_save($account->uid, $relying_party['realm'], TRUE);
