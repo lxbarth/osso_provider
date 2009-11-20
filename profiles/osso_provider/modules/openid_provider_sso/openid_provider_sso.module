@@ -18,6 +18,17 @@ function openid_provider_sso_theme() {
 }
 
 /**
+ * Implementation of hook_menu_alter().
+ *
+ * Replace registration page with custom callback to reroute user depending on
+ * her authentication status.
+ */
+function openid_provider_sso_menu_alter(&$items) {
+  $items['user/register']['page callback'] = 'openid_provider_sso_register_page';
+  $items['user/register']['access callback'] = TRUE;
+}
+
+/**
  * Implementation of hook_user().
  */
 function openid_provider_sso_user($op, &$edit, &$account) {
@@ -48,21 +59,17 @@ function openid_provider_sso_user($op, &$edit, &$account) {
  */
 function openid_provider_sso_form_alter(&$form, $form_state, $form_id) {
 
-  if ($form_id == 'user_register' && isset($_GET['relying_party']) && isset($_GET['redirect'])) {
+  if ($form_id == 'user_register' && isset($_GET['relying_party'])) {
     $relying_party = trim(check_url(urldecode($_GET['relying_party'])), '/');
-    $redirect = trim(check_url(urldecode($_GET['redirect'])), '/');;
 
-    foreach (variable_get('openid_provider_sso_rps', array()) as $known_rp) {
-      if ($relying_party == trim($known_rp['realm'], '/')) {
-        $form['#relying_party'] = $relying_party;
-        $form['#redirect'] = $redirect;
-        $form['#submit'][] = 'openid_provider_sso_user_submit';
-        $form['relying_welcome'] = array(
-          '#value' => theme('openid_provider_sso_welcome', $known_rp['name']),
-          '#weight' => -10,
-        );
-        return;
-      }
+    if ($known_rp = openid_provider_sso_relying_party($relying_party)) {
+
+      $form['#relying_party'] = $relying_party;
+      $form['#submit'][] = 'openid_provider_sso_user_submit';
+      $form['relying_welcome'] = array(
+        '#value' => theme('openid_provider_sso_welcome', $known_rp['name']),
+        '#weight' => -10,
+      );
     }
   }
 }
@@ -72,10 +79,51 @@ function openid_provider_sso_form_alter(&$form, $form_state, $form_id) {
  */
 function openid_provider_sso_user_submit($form, &$form_state) {
   global $user;
-  if (isset($form['#relying_party']) && isset($form['#redirect']) && !empty($user->uid)) {
+  if (isset($form['#relying_party']) && !empty($user->uid)) {
     $identifier = urlencode($user->name);
-    drupal_goto($form['#relying_party'], "q={$form['#redirect']}&identifier=$identifier");
+    drupal_goto($form['#relying_party'], "q=user&identifier=$identifier");
   }
+}
+
+/**
+ * Custom user/register callback.
+ */
+function openid_provider_sso_register_page() {
+  global $user;
+
+  // If user arrives from trusted RP and is already authenticated on this site,
+  // redirect her back to RPs login screen with identifier set.
+  // Otherwise fall bak to default behavior, return registration form.
+  if ($user->uid) {
+
+    if (isset($_GET['relying_party'])) {
+      $relying_party = trim(check_url(urldecode($_GET['relying_party'])), '/');
+
+      // Only if RP is actually known.
+      if (openid_provider_sso_relying_party($relying_party)) {
+        $identifier = urlencode($user->name);
+        drupal_goto($relying_party, "q=user&identifier=$identifier");
+      }
+    }
+
+    return drupal_access_denied();
+  }
+
+  return drupal_get_form('user_register');
+}
+
+/**
+ * Returns a relying party by its realm. Returns FALSE if no relying party of
+ * given realm is known.
+ */
+function openid_provider_sso_relying_party($realm) {
+  $realm = trim($realm);
+  foreach (variable_get('openid_provider_sso_rps', array()) as $rp) {
+    if (trim($rp['realm'], '/') == $realm) {
+      return $rp;
+    }
+  }
+  return FALSE;
 }
 
 /**
