@@ -1,7 +1,9 @@
 
 
-OpenID Simple Sign-On (Provider)
-================================
+OpenID Provider SSO 
+===================
+
+OpenID Provider extension for Simple Sign-On among trusted sites.
 
 Add trusted sites to a Drupal OpenID provider. Users enjoy a simplified sign on
 process between trusted sites.
