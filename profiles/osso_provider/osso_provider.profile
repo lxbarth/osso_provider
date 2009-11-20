@@ -7,7 +7,7 @@
  * @return
  *   An array of modules to enable.
  */
-function openidp_profile_modules() {
+function osso_provider_profile_modules() {
   return array(
     'color',
     'comment',
@@ -32,7 +32,7 @@ function openidp_profile_modules() {
  *   and optional 'language' to override the language selection for
  *   language-specific profiles.
  */
-function openidp_profile_details() {
+function osso_provider_profile_details() {
   return array(
     'name' => 'OpenID Provider',
     'description' => 'Sets up an OpenID Identity Provider site.'
@@ -48,7 +48,7 @@ function openidp_profile_details() {
  *   while the values will be displayed to the user in the installer
  *   task list.
  */
-function openidp_profile_task_list() {
+function osso_provider_profile_task_list() {
   return array(
     'configure' => st('OpenID Provider configuration'),
   );
@@ -105,7 +105,7 @@ function openidp_profile_task_list() {
  *   An optional HTML string to display to the user. Only used if you
  *   modify the $task, otherwise discarded.
  */
-function openidp_profile_tasks(&$task, $url) {
+function osso_provider_profile_tasks(&$task, $url) {
 
   if ($task == 'profile') {
     // Insert default user-defined node types into the database. For a complete
@@ -161,7 +161,7 @@ function openidp_profile_tasks(&$task, $url) {
     // Enable the right theme. This must be handled after drupal_flush_all_caches()
     // which rebuilds the system table based on a stale static cache,
     // blowing away our changes.
-    _openidp_system_theme_data();
+    _osso_provider_system_theme_data();
     db_query("UPDATE {system} SET status = 0 WHERE type = 'theme'");
     db_query("UPDATE {system} SET status = 1 WHERE type = 'theme' AND name = 'singular'");
     db_query("UPDATE {blocks} SET region = '' WHERE theme = 'singular'");
@@ -177,7 +177,7 @@ function openidp_profile_tasks(&$task, $url) {
  * Allows the profile to alter the site-configuration form. This is
  * called through custom invocation, so $form_state is not populated.
  */
-function openidp_form_alter(&$form, $form_state, $form_id) {
+function osso_provider_form_alter(&$form, $form_state, $form_id) {
   if ($form_id == 'install_configure') {
     // Set default for site name field.
     $form['site_information']['site_name']['#default_value'] = 'OpenID Provider';
@@ -190,11 +190,11 @@ function openidp_form_alter(&$form, $form_state, $form_id) {
 /**
  * Reimplementation of system_theme_data(). The core function's static cache
  * is populated during install prior to active install profile awareness.
- * This workaround makes enabling themes in profiles/openidp/themes possible.
+ * This workaround makes enabling themes in profiles/osso_provider/themes possible.
  */
-function _openidp_system_theme_data() {
+function _osso_provider_system_theme_data() {
   global $profile;
-  $profile = 'openidp';
+  $profile = 'osso_provider';
 
   $themes = drupal_system_listing('\.info$', 'themes');
   $engines = drupal_system_listing('\.engine$', 'themes/engines');
