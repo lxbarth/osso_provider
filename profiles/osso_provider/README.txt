@@ -8,3 +8,9 @@ experience "Simple Sign-On". This profile uses OpenID Provider SSO to demo
 Simple Sign-On.
 
 Use together with OpenID SSO Demo (Relying Party) profile.
+
+Installation
+------------
+
+Run install profile, set up OpenID Relying Parties as described in OpenID 
+Provider SSO module README.
