@@ -16,10 +16,12 @@ function osso_provider_profile_modules() {
     'taxonomy',
     'dblog',
     'openid_provider',
-    'xrds_simple',
     'openid_provider_sso',
+    'osso_provider',
+    'path',
     'token',
     'strongarm',
+    'xrds_simple',
   );
 }
 
