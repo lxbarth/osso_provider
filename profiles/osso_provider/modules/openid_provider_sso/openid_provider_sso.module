@@ -4,18 +4,20 @@
  * Implementation of hook_user().
  */
 function openid_provider_sso_user($op, &$edit, &$account) {
-  if ($op == 'insert') {
+  switch ($op) {
+    case 'insert':
+    case 'update':
+      // Add trusted Relying Parties to a new user on creation.
+      module_load_include('inc', 'openid_provider');
+      foreach (variable_get('openid_provider_sso_rps', array()) as $realm) {
+        _openid_provider_rp_save($account->uid, $realm, TRUE);
+      }
 
-    // Add trusted Relying Parties to a new user on creation.
-    module_load_include('inc', 'openid_provider');
-    foreach (variable_get('openid_provider_sso_rps', array()) as $realm) {
-      _openid_provider_rp_save($account->uid, $realm, TRUE);
-    }
-
-    // Set an alias for this user.
-    path_set_alias('user/'. $account->uid .'/identity', 'openid/'. $account->name);
-  }
-  elseif ($op == 'delete') {
-    path_set_alias('user/'. $account->uid .'/identity');
+      // Set an alias for this user.
+      path_set_alias('user/'. $account->uid .'/identity', 'openid/'. $account->name);
+      break;
+    case 'delete':
+      path_set_alias('user/'. $account->uid .'/identity');
+      break;
   }
 }
