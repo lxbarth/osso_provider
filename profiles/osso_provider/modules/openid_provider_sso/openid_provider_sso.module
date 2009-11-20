@@ -1,6 +1,23 @@
 <?php
 
 /**
+ * @file
+ * Hooks, callbacks for OpenID Provider SSO.
+ *
+ * @todo
+ * - Storing Known Relying Parties in Drupal variable does not scale.
+ */
+
+/**
+ * Implementation of hook_theme().
+ */
+function openid_provider_sso_theme() {
+  return array(
+    'openid_provider_sso_welcome' => array(),
+  );
+}
+
+/**
  * Implementation of hook_user().
  */
 function openid_provider_sso_user($op, &$edit, &$account) {
@@ -9,8 +26,8 @@ function openid_provider_sso_user($op, &$edit, &$account) {
     case 'update':
       // Add trusted Relying Parties to a new user on creation.
       module_load_include('inc', 'openid_provider');
-      foreach (variable_get('openid_provider_sso_rps', array()) as $realm) {
-        _openid_provider_rp_save($account->uid, $realm, TRUE);
+      foreach (variable_get('openid_provider_sso_rps', array()) as $relying_party) {
+        _openid_provider_rp_save($account->uid, $relying_party['realm'], TRUE);
       }
 
       // Set an alias for this user.
@@ -20,4 +37,53 @@ function openid_provider_sso_user($op, &$edit, &$account) {
       path_set_alias('user/'. $account->uid .'/identity');
       break;
   }
+}
+
+/**
+ * Implementation of hook_form_alter().
+ *
+ * Redirect user to relying party after registration.
+ */
+function openid_provider_sso_form_alter(&$form, $form_state, $form_id) {
+
+  if ($form_id == 'user_register' && isset($_GET['relying_party']) && isset($_GET['redirect'])) {
+    $relying_party = trim(check_url(urldecode($_GET['relying_party'])), '/');
+    $redirect = trim(check_url(urldecode($_GET['redirect'])), '/');;
+
+    foreach (variable_get('openid_provider_sso_rps', array()) as $known_rp) {
+      if ($relying_party == trim($known_rp['realm'], '/')) {
+        $form['#relying_party'] = $relying_party;
+        $form['#redirect'] = $redirect;
+        $form['#submit'][] = 'openid_provider_sso_user_submit';
+        $form['relying_welcome'] = array(
+          '#value' => theme('openid_provider_sso_welcome', $known_rp['name']),
+          '#weight' => -10,
+        );
+        return;
+      }
+    }
+  }
+}
+
+/**
+ * User form submit handler for redirections.
+ */
+function openid_provider_sso_user_submit($form, &$form_state) {
+  global $user;
+  if (isset($form['#relying_party']) && isset($form['#redirect']) && !empty($user->uid)) {
+    $identifier = urlencode($user->name);
+    drupal_goto($form['#relying_party'], "q={$form['#redirect']}&identifier=$identifier");
+  }
+}
+
+/**
+ * Theme welcome text on registration forms.
+ *
+ * @todo: expand.
+ */
+function theme_openid_provider_sso_welcome($relying_party) {
+  $items = array(
+    t('!relying_party is part of !site_name', array('!relying_party' => $relying_party, '!site_name' => variable_get('site_name', 'Drupal'))),
+  );
+  return theme('item_list', $items);
 }

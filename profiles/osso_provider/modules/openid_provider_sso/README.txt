@@ -1,6 +1,6 @@
 
 
-OpenID Provider SSO 
+OpenID Provider SSO
 ===================
 
 OpenID Provider extension for Simple Sign-On among trusted sites.
@@ -18,6 +18,14 @@ Installation
 Install this module and dependencies. In your site's settings.php file, define a
 list of trusted Relying Parties:
 
+// URL must have trailing slashes.
 $conf['openid_provider_sso_rps'] = array(
-  'http://localhost/rp/'
+  array(
+    'realm' => 'http://example1.com/',
+    'name' => 'The Example 1 Blog',
+  ),
+  array(
+    'realm' => 'http://example2.com/',
+    'name' => 'The Example 2 Blog',
+  ),
 );
