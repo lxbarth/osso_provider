@@ -1,24 +1,21 @@
 <?php
 
 /**
- * Implementation of hook_strongarm().
- */
-function openid_provider_sso_strongarm() {
-  return array (
-    'pathauto_openid_provider_pattern' => 'openid/[user-raw]',
-  );
-}
-
-/**
  * Implementation of hook_user().
- *
- * Add trusted Relying Parties to a new user on creation.
  */
 function openid_provider_sso_user($op, &$edit, &$account) {
   if ($op == 'insert') {
+
+    // Add trusted Relying Parties to a new user on creation.
     module_load_include('inc', 'openid_provider');
     foreach (variable_get('openid_provider_sso_rps', array()) as $realm) {
       _openid_provider_rp_save($account->uid, $realm, TRUE);
     }
+
+    // Set an alias for this user.
+    path_set_alias('user/'. $account->uid .'/identity', 'openid/'. $account->name);
+  }
+  elseif ($op == 'delete') {
+    path_set_alias('user/'. $account->uid);
   }
 }
