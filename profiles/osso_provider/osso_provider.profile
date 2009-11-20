@@ -18,7 +18,6 @@ function osso_provider_profile_modules() {
     'openid_provider',
     'xrds_simple',
     'openid_provider_sso',
-    'pathauto',
     'token',
     'strongarm',
   );
