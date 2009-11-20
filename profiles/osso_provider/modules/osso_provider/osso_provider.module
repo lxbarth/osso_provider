@@ -8,3 +8,33 @@ function osso_provider_strongarm() {
     'user_email_verification' => 0,
   );
 }
+
+/**
+ * Implementation hook_menu_alter().
+ */
+function osso_provider_menu_alter(&$items) {
+  foreach (array('user', 'logout') as $path) {
+    $items[$path]['menu_name'] = 'primary-links';
+    $items[$path]['type'] = MENU_NORMAL_ITEM;
+  }
+  $items['user']['title callback'] = 'osso_provider_user_menu_title';
+  $items['user/register']['title callback'] = 'osso_provider_register_menu_title';
+}
+
+/**
+ * Custom title callback.
+ */
+function osso_provider_user_menu_title() {
+  global $user;
+  if ($user->uid) {
+    return t('Hello @user', array('@user' => $user->name));
+  }
+  return t('Log in / Sign up');
+}
+
+/**
+ * Custom title callback.
+ */
+function osso_provider_register_menu_title() {
+  return t('Sign up');
+}
