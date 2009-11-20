@@ -16,6 +16,6 @@ function openid_provider_sso_user($op, &$edit, &$account) {
     path_set_alias('user/'. $account->uid .'/identity', 'openid/'. $account->name);
   }
   elseif ($op == 'delete') {
-    path_set_alias('user/'. $account->uid);
+    path_set_alias('user/'. $account->uid .'/identity');
   }
 }
