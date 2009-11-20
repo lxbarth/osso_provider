@@ -17,7 +17,7 @@ function osso_provider_profile_modules() {
     'dblog',
     'openid_provider',
     'xrds_simple',
-    'openid_provider_trusted',
+    'openid_provider_sso',
     'pathauto',
     'token',
     'strongarm',
