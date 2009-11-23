@@ -65,22 +65,6 @@ function openid_provider_sso_form_alter(&$form, $form_state, $form_id) {
       );
     }
   }
-  // Clean up OpenID provider form.
-  elseif ($form_id == 'openid_provider_form') {
-    // Force users to confirm each time. This is necessary to show that the OP
-    // is used at all. Otherwise a confusing "magic" log in happens on RP and
-    // the user has no chance to understand or bail out if she would like to log
-    // in with a different account.
-    unset($form['submit_always']);
-
-    global $user;
-    $relying_party = openid_provider_sso_relying_party($form_state['storage']['realm']);
-    $form['intro']['#value'] = '<p>'. t('Log in to !relying_party as', array('!relying_party' => $relying_party['name'])) .'</p>';
-    $form['intro']['#value'] .= '<h3>'. $user->name .'</h3>';
-    $form['submit_once']['#value'] = t('Log in');
-    // @todo stash $form_state['storage']['realm'] in session
-    $form['other_user']['#value'] .= '<p>'. l(t('Are you not @user?', array('@user' => $user->name)), 'logout', array('query' => 'destination=user/register')) .'</p>';
-  }
 }
 
 /**
@@ -88,7 +72,13 @@ function openid_provider_sso_form_alter(&$form, $form_state, $form_id) {
  */
 function openid_provider_sso_user_submit($form, &$form_state) {
   global $user;
-  if (isset($form['#realm']) && !empty($user->uid)) {
+  if (openid_provider_sso_relying_party($form['#realm']) && !empty($user->uid)) {
+
+    // Save RP realm to list of accepted sites to spare the user another round
+    // trip from RP to here.
+    module_load_include('inc', 'openid_provider');
+    _openid_provider_rp_save($user->uid, $form['#realm'], TRUE);
+
     $identifier = urlencode($user->name);
     drupal_goto($form['#realm'], "q=user&identifier=$identifier");
   }
@@ -106,14 +96,43 @@ function openid_provider_sso_user_page() {
   // Otherwise fall back to default behavior, return user_page().
   global $user;
   if ($user->uid) {
-
-    if ($relying_party = openid_provider_sso_relying_party($_GET['realm'])) {
-      $identifier = urlencode($user->name);
-      drupal_goto($relying_party['realm'], "q=user&identifier=$identifier");
-    }
+    return drupal_get_form('openid_provider_sso_confirm', $_GET['realm']);
   }
 
   return user_page();
+}
+
+/**
+ * Confirmation form for authentication.
+ */
+function openid_provider_sso_confirm($form_state, $realm) {
+
+  if ($relying_party = openid_provider_sso_relying_party($realm)) {
+    global $user;
+
+    $form = array();
+    $form['#realm'] = $realm;
+    $form['intro']['#value'] = '<p>'. t('Log in to !relying_party as', array('!relying_party' => $relying_party['name'])) .'</p>';
+    $form['intro']['#value'] .= '<h3>'. $user->name .'</h3>';
+    $form['submit'] = array(
+      '#type' => 'submit',
+      '#value' => t('Log in'),
+    );
+    $form['other_user']['#value'] .= '<p>'. l(t('Are you not @user?', array('@user' => $user->name)), 'logout', array('query' => 'destination=user/register')) .'</p>';
+    return $form;
+  }
+}
+
+/**
+ * Submit handler for openid_provider_sso_confirm().
+ */
+function openid_provider_sso_confirm_submit($form, &$form_state) {
+
+  if ($relying_party = openid_provider_sso_relying_party($form['#realm'])) {
+    global $user;
+    $identifier = urlencode($user->name);
+    drupal_goto($relying_party['realm'], "q=user&identifier=$identifier");
+  }
 }
 
 /**
