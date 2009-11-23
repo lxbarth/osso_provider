@@ -51,8 +51,8 @@ function openid_provider_sso_user($op, &$edit, &$account) {
  */
 function openid_provider_sso_form_alter(&$form, $form_state, $form_id) {
 
-  if ($form_id == 'user_register' && isset($_GET['relying_party'])) {
-    $relying_party = trim(check_url(urldecode($_GET['relying_party'])), '/');
+  if ($form_id == 'user_register' && isset($_GET['realm'])) {
+    $relying_party = trim(check_url(urldecode($_GET['realm'])), '/');
 
     if ($known_rp = openid_provider_sso_relying_party($relying_party)) {
 
@@ -107,8 +107,8 @@ function openid_provider_sso_register_page() {
   // Otherwise fall back to default behavior, return registration form.
   if ($user->uid) {
 
-    if (isset($_GET['relying_party'])) {
-      $relying_party = trim(check_url(urldecode($_GET['relying_party'])), '/');
+    if (isset($_GET['realm'])) {
+      $relying_party = trim(check_url(urldecode($_GET['realm'])), '/');
 
       // Only if RP is actually known.
       if (openid_provider_sso_relying_party($relying_party)) {
