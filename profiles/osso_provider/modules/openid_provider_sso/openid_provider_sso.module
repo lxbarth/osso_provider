@@ -36,6 +36,7 @@ function openid_provider_sso_user($op, &$edit, &$account) {
     case 'insert':
     case 'update':
       // Set an alias for this user.
+      // @todo: Verify that setting path alias does not collide with pathauto.
       path_set_alias('user/'. $account->uid .'/identity', 'openid/'. $account->name);
       break;
     case 'delete':
