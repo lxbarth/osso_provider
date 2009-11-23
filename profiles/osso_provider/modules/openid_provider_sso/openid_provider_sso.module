@@ -24,8 +24,8 @@ function openid_provider_sso_theme() {
  * her authentication status.
  */
 function openid_provider_sso_menu_alter(&$items) {
-  $items['user/register']['page callback'] = 'openid_provider_sso_register_page';
-  $items['user/register']['access callback'] = TRUE;
+  $items['user']['page callback'] = 'openid_provider_sso_user_page';
+  $items['user/%user_uid_optional']['page callback'] = 'openid_provider_sso_user_page';
 }
 
 /**
@@ -52,10 +52,12 @@ function openid_provider_sso_user($op, &$edit, &$account) {
  */
 function openid_provider_sso_form_alter(&$form, $form_state, $form_id) {
 
-  if ($form_id == 'user_register' && isset($_SESSION['realm'])) {
+  // Redirect after registration or login.
+  if ($form_id == 'user_register' || $form_id == 'user_login') {
 
-    if ($relying_party = openid_provider_sso_relying_party($_SESSION['realm'])) {
+    if ($relying_party = openid_provider_sso_relying_party($_GET['realm'])) {
 
+      $form['#realm'] = $relying_party['realm'];
       $form['#submit'][] = 'openid_provider_sso_user_submit';
       $form['relying_welcome'] = array(
         '#value' => theme('openid_provider_sso_welcome', $relying_party['name']),
@@ -63,9 +65,8 @@ function openid_provider_sso_form_alter(&$form, $form_state, $form_id) {
       );
     }
   }
-
   // Clean up OpenID provider form.
-  if ($form_id == 'openid_provider_form') {
+  elseif ($form_id == 'openid_provider_form') {
     // Force users to confirm each time. This is necessary to show that the OP
     // is used at all. Otherwise a confusing "magic" log in happens on RP and
     // the user has no chance to understand or bail out if she would like to log
@@ -94,44 +95,33 @@ function openid_provider_sso_user_submit($form, &$form_state) {
 }
 
 /**
- * Custom user/register callback.
+ * Custom user callback.
  */
-function openid_provider_sso_register_page() {
-
-  // Decode and validate realm.
-  // Store realm in session to make it available for redirects after user
-  // has registered or logged in.
-  // See openid_provider_sso_user_submit().
-  if (isset($_GET['realm'])) {
-    if ($relying_party = openid_provider_sso_relying_party(trim(check_url(urldecode($_GET['realm'])), '/'))) {
-      $_SESSION['realm'] = $relying_party['realm'];
-    }
-  }
+function openid_provider_sso_user_page() {
 
   // If user arrives from trusted RP and is already authenticated on this site,
   // redirect her back to RPs login screen with identifier set: Client will
   // populate an OpenID authentication request with the username and send it
   // back to us. This happens invisible to the user.
-  // Otherwise fall back to default behavior, return registration form.
+  // Otherwise fall back to default behavior, return user_page().
   global $user;
   if ($user->uid) {
 
-    if ($relying_party) {
+    if ($relying_party = openid_provider_sso_relying_party($_GET['realm'])) {
       $identifier = urlencode($user->name);
       drupal_goto($relying_party['realm'], "q=user&identifier=$identifier");
     }
-    return drupal_access_denied();
   }
 
-  return drupal_get_form('user_register');
+  return user_page();
 }
 
 /**
  * Returns a relying party by its realm. Returns FALSE if no relying party of
- * given realm is known.
+ * given realm is known. $realm may be URL encoded.
  */
 function openid_provider_sso_relying_party($realm) {
-  $realm = trim($realm, '/');
+  $realm = trim(urldecode($realm), '/');
   foreach (variable_get('openid_provider_sso_rps', array()) as $rp) {
     if (trim($rp['realm'], '/') == $realm) {
       return $rp;
