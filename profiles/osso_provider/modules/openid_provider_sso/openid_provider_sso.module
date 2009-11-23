@@ -52,14 +52,14 @@ function openid_provider_sso_user($op, &$edit, &$account) {
 function openid_provider_sso_form_alter(&$form, $form_state, $form_id) {
 
   if ($form_id == 'user_register' && isset($_GET['realm'])) {
-    $relying_party = trim(check_url(urldecode($_GET['realm'])), '/');
+    $realm = trim(check_url(urldecode($_GET['realm'])), '/');
 
-    if ($known_rp = openid_provider_sso_relying_party($relying_party)) {
+    if ($relying_party = openid_provider_sso_relying_party($realm)) {
 
-      $form['#relying_party'] = $relying_party;
+      $form['#realm'] = $realm;
       $form['#submit'][] = 'openid_provider_sso_user_submit';
       $form['relying_welcome'] = array(
-        '#value' => theme('openid_provider_sso_welcome', $known_rp['name']),
+        '#value' => theme('openid_provider_sso_welcome', $relying_party['name']),
         '#weight' => -10,
       );
     }
@@ -88,9 +88,9 @@ function openid_provider_sso_form_alter(&$form, $form_state, $form_id) {
  */
 function openid_provider_sso_user_submit($form, &$form_state) {
   global $user;
-  if (isset($form['#relying_party']) && !empty($user->uid)) {
+  if (isset($form['#realm']) && !empty($user->uid)) {
     $identifier = urlencode($user->name);
-    drupal_goto($form['#relying_party'], "q=user&identifier=$identifier");
+    drupal_goto($form['#realm'], "q=user&identifier=$identifier");
   }
 }
 
