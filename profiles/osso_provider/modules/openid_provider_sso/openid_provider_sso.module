@@ -93,7 +93,7 @@ function openid_provider_sso_register_page() {
 
   // If user arrives from trusted RP and is already authenticated on this site,
   // redirect her back to RPs login screen with identifier set.
-  // Otherwise fall bak to default behavior, return registration form.
+  // Otherwise fall back to default behavior, return registration form.
   if ($user->uid) {
 
     if (isset($_GET['relying_party'])) {
