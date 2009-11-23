@@ -74,9 +74,8 @@ function openid_provider_sso_form_alter(&$form, $form_state, $form_id) {
     unset($form['submit_always']);
 
     $relying_party = openid_provider_sso_relying_party($form_state['storage']['realm']);
-
-    $form['submit_once']['#value'] = t('Log in');
     $form['intro']['#value'] = theme('openid_provider_sso_welcome', $relying_party['name']);
+    $form['submit_once']['#value'] = t('Log in');
   }
 }
 
