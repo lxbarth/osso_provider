@@ -35,14 +35,6 @@ function openid_provider_sso_user($op, &$edit, &$account) {
   switch ($op) {
     case 'insert':
     case 'update':
-      // Add trusted Relying Parties to a new user on creation. This will
-      // eliminate the manual confirmation step required when first time logging
-      // on to relying parties.
-      module_load_include('inc', 'openid_provider');
-      foreach (variable_get('openid_provider_sso_rps', array()) as $relying_party) {
-        _openid_provider_rp_save($account->uid, $relying_party['realm'], TRUE);
-      }
-
       // Set an alias for this user.
       path_set_alias('user/'. $account->uid .'/identity', 'openid/'. $account->name);
       break;
@@ -71,6 +63,20 @@ function openid_provider_sso_form_alter(&$form, $form_state, $form_id) {
         '#weight' => -10,
       );
     }
+  }
+
+  // Clean up OpenID provider form.
+  if ($form_id == 'openid_provider_form') {
+    // Force users to confirm each time. This is necessary to show that the OP
+    // is used at all. Otherwise a confusing "magic" log in happens on RP and
+    // the user has no chance to understand or bail out if she would like to log
+    // in with a different account.
+    unset($form['submit_always']);
+
+    $relying_party = openid_provider_sso_relying_party($form_state['storage']['realm']);
+
+    $form['submit_once']['#value'] = t('Log in');
+    $form['intro']['#value'] = theme('openid_provider_sso_welcome', $relying_party['name']);
   }
 }
 
@@ -117,7 +123,7 @@ function openid_provider_sso_register_page() {
  * given realm is known.
  */
 function openid_provider_sso_relying_party($realm) {
-  $realm = trim($realm);
+  $realm = trim($realm, '/');
   foreach (variable_get('openid_provider_sso_rps', array()) as $rp) {
     if (trim($rp['realm'], '/') == $realm) {
       return $rp;
@@ -132,8 +138,5 @@ function openid_provider_sso_relying_party($realm) {
  * @todo: expand.
  */
 function theme_openid_provider_sso_welcome($relying_party) {
-  $items = array(
-    t('!relying_party is part of !site_name', array('!relying_party' => $relying_party, '!site_name' => variable_get('site_name', 'Drupal'))),
-  );
-  return theme('item_list', $items);
+  return t('<p>!relying_party is part of !site_name.</p><p>You can log in with your existing !site_name account.</p>', array('!relying_party' => $relying_party, '!site_name' => variable_get('site_name', 'Drupal')));
 }
