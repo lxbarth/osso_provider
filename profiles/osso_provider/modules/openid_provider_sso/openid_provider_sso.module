@@ -52,12 +52,10 @@ function openid_provider_sso_user($op, &$edit, &$account) {
  */
 function openid_provider_sso_form_alter(&$form, $form_state, $form_id) {
 
-  if ($form_id == 'user_register' && isset($_GET['realm'])) {
-    $realm = trim(check_url(urldecode($_GET['realm'])), '/');
+  if ($form_id == 'user_register' && isset($_SESSION['realm'])) {
 
-    if ($relying_party = openid_provider_sso_relying_party($realm)) {
+    if ($relying_party = openid_provider_sso_relying_party($_SESSION['realm'])) {
 
-      $form['#realm'] = $realm;
       $form['#submit'][] = 'openid_provider_sso_user_submit';
       $form['relying_welcome'] = array(
         '#value' => theme('openid_provider_sso_welcome', $relying_party['name']),
@@ -99,25 +97,29 @@ function openid_provider_sso_user_submit($form, &$form_state) {
  * Custom user/register callback.
  */
 function openid_provider_sso_register_page() {
-  global $user;
+
+  // Decode and validate realm.
+  // Store realm in session to make it available for redirects after user
+  // has registered or logged in.
+  // See openid_provider_sso_user_submit().
+  if (isset($_GET['realm'])) {
+    if ($relying_party = openid_provider_sso_relying_party(trim(check_url(urldecode($_GET['realm'])), '/'))) {
+      $_SESSION['realm'] = $relying_party['realm'];
+    }
+  }
 
   // If user arrives from trusted RP and is already authenticated on this site,
   // redirect her back to RPs login screen with identifier set: Client will
   // populate an OpenID authentication request with the username and send it
   // back to us. This happens invisible to the user.
   // Otherwise fall back to default behavior, return registration form.
+  global $user;
   if ($user->uid) {
 
-    if (isset($_GET['realm'])) {
-      $realm = trim(check_url(urldecode($_GET['realm'])), '/');
-
-      // Only if RP is actually known.
-      if (openid_provider_sso_relying_party($realm)) {
-        $identifier = urlencode($user->name);
-        drupal_goto($realm, "q=user&identifier=$identifier");
-      }
+    if ($relying_party) {
+      $identifier = urlencode($user->name);
+      drupal_goto($relying_party['realm'], "q=user&identifier=$identifier");
     }
-
     return drupal_access_denied();
   }
 
