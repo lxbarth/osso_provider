@@ -109,12 +109,12 @@ function openid_provider_sso_register_page() {
   if ($user->uid) {
 
     if (isset($_GET['realm'])) {
-      $relying_party = trim(check_url(urldecode($_GET['realm'])), '/');
+      $realm = trim(check_url(urldecode($_GET['realm'])), '/');
 
       // Only if RP is actually known.
-      if (openid_provider_sso_relying_party($relying_party)) {
+      if (openid_provider_sso_relying_party($realm)) {
         $identifier = urlencode($user->name);
-        drupal_goto($relying_party, "q=user&identifier=$identifier");
+        drupal_goto($realm, "q=user&identifier=$identifier");
       }
     }
 
