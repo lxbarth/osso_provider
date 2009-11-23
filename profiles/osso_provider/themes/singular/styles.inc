@@ -28,32 +28,32 @@ function singular_get_style_info() {
       $info['background_repeat'] = !empty($settings['background_repeat']) ? $settings['background_repeat'] : 'no-repeat';
       return $info;
     default:
-      $path = drupal_get_path('theme', 'singular') .'/images';
+      $path = $GLOBALS['base_url'] .'/'. drupal_get_path('theme', 'singular') .'/images';
       $styles = array(
         'book' => array(
           'background_color' => '#e8cfab',
           'background_repeat' => 'repeat-x',
-          'background_url' => url("$path/book.jpg", array('absolute' => TRUE)),
+          'background_url' => "$path/book.jpg",
         ),
         'clouds' => array(
           'background_color' => '#f99f7c',
           'background_repeat' => 'repeat-x',
-          'background_url' => url("$path/clouds.jpg", array('absolute' => TRUE)),
+          'background_url' => "$path/clouds.jpg",
         ),
         'city' => array(
           'background_color' => '#918d8a',
           'background_repeat' => 'repeat-x',
-          'background_url' => url("$path/city.jpg", array('absolute' => TRUE)),
+          'background_url' => "$path/city.jpg",
         ),
         'rocks' => array(
           'background_color' => '#36302b',
           'background_repeat' => 'repeat-x',
-          'background_url' => url("$path/rocks.jpg", array('absolute' => TRUE)),
+          'background_url' => "$path/rocks.jpg",
         ),
         'sea' => array(
           'background_color' => '#011220',
           'background_repeat' => 'repeat-x',
-          'background_url' => url("$path/sea.jpg", array('absolute' => TRUE)),
+          'background_url' => "$path/sea.jpg",
         ),
       );
       return !empty($styles[$style]) ? $styles[$style] : $styles['sea'];
