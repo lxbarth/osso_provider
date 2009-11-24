@@ -27,18 +27,12 @@ function openid_provider_sso_menu() {
     'access callback' => 'user_is_logged_in',
     'type' => MENU_CALLBACK,
   );
+  $items['sso-request'] = array(
+    'page callback' => 'openid_provider_sso_request',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
   return $items;
-}
-
-/**
- * Implementation of hook_menu_alter().
- *
- * Replace registration page with custom callback to reroute user depending on
- * her authentication status.
- */
-function openid_provider_sso_menu_alter(&$items) {
-  $items['user']['page callback'] = 'openid_provider_sso_user_page';
-  $items['user/%user_uid_optional']['page callback'] = 'openid_provider_sso_user_page';
 }
 
 /**
@@ -86,23 +80,17 @@ function openid_provider_sso_form_alter(&$form, $form_state, $form_id) {
  */
 function openid_provider_sso_user_submit($form, &$form_state) {
   global $user;
-  if (openid_provider_sso_relying_party($form['#realm']) && !empty($user->uid)) {
+  if (($relying_party = openid_provider_sso_relying_party($form['#realm'])) && !empty($user->uid)) {
 
     // Save RP realm to list of accepted sites to spare the user another
     // confirmation click when coming back from the RP with the authentication
     // request. The implicit understanding here is that the user agrees to share
     // her identity on all sites in the trusted web of sites.
     module_load_include('inc', 'openid_provider');
-    _openid_provider_rp_save($user->uid, $form['#realm'], TRUE);
+    _openid_provider_rp_save($user->uid, $relying_party['realm'], TRUE);
 
-    // Redirect user to RP. The identifier key in the query will tell the RP
-    // which user is trying to log in. The RP will use this information to form
-    // an OpenID identifier following the pattern
-    // [OpenIDproviderURL]/openid/$identifier
-    // and use this identifier to issue an authentication request back to this
-    // site.
-    $identifier = urlencode($user->name);
-    drupal_goto($form['#realm'], "q=user&identifier=$identifier");
+    // Redirect user to RP.
+    openid_provider_sso_redirect($relying_party['realm']);
   }
 }
 
@@ -132,60 +120,80 @@ function openid_provider_sso_logout_login() {
   $user = drupal_anonymous_user();
   // +++ End copy from user_logout().
 
-  // Redirect to user login, pass on realm if present.
+  // Redirect to user login, pass on realm if present and valid.
   $query = '';
-  if ($_GET['realm']) {
-    $query = 'realm='. $_GET['realm'];
+  if ($relying_party = openid_provider_sso_relying_party($_GET['realm'])) {
+    $query = 'realm='. urlencode($relying_party['realm']);
   }
   drupal_goto('user', $query);
 }
 
 /**
- * Custom user callback.
+ * Page callback for a Simple Sign-On request.
+ *
+ * If user arrives from trusted RP and is already authenticated on this site,
+ * present here with a confirmation form verifying that she would like to use
+ * the account presently authenticated on this site.
+ *
+ * If user is not authenticated, redirect to login form.
  */
-function openid_provider_sso_user_page() {
+function openid_provider_sso_request() {
 
-  // If user arrives from trusted RP and is already authenticated on this site,
-  // redirect her back to RPs login screen with identifier set: Client will
-  // populate an OpenID authentication request with the username and send it
-  // back to us. This happens invisible to the user.
-  // Otherwise fall back to default behavior, return user_page().
-  global $user;
-  if ($user->uid) {
-    return drupal_get_form('openid_provider_sso_confirm', $_GET['realm']);
+  if ($relying_party = openid_provider_sso_relying_party($_GET['realm'])) {
+    global $user;
+    if ($user->uid) {
+      return drupal_get_form('openid_provider_sso_confirm', $relying_party);
+    }
+
+    // Redirect user to login form.
+    return drupal_goto('user', 'realm='. urlencode($relying_party['realm']));
   }
 
-  return user_page();
+  // Invalid request.
+  return drupal_access_denied();
 }
 
 /**
  * Confirmation form for authentication.
  */
-function openid_provider_sso_confirm($form_state, $realm) {
+function openid_provider_sso_confirm($form_state, $relying_party) {
+  global $user;
 
-  if ($relying_party = openid_provider_sso_relying_party($realm)) {
-    global $user;
-
-    $form = array();
-    $form['#realm'] = $realm;
-    $form['intro']['#value'] = '<p>'. t('Log in to !relying_party as', array('!relying_party' => $relying_party['name'])) .'</p>';
-    $form['intro']['#value'] .= '<h3>'. $user->name .'</h3>';
-    $form['submit'] = array(
-      '#type' => 'submit',
-      '#value' => t('Log in'),
-    );
-    $form['other_user']['#value'] .= '<p>'. l(t('Are you not @user?', array('@user' => $user->name)), 'logout/login', array('query' => 'realm='. urlencode($relying_party['realm']))) .'</p>';
-    return $form;
-  }
+  $form = array();
+  $form['#realm'] = $relying_party['realm'];
+  $form['intro']['#value'] = '<p>'. t('Log in to !relying_party as', array('!relying_party' => $relying_party['name'])) .'</p>';
+  $form['intro']['#value'] .= '<h3>'. $user->name .'</h3>';
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Log in'),
+  );
+  $form['other_user']['#value'] .= '<p>'. l(t('Are you not @user?', array('@user' => $user->name)), 'logout/login', array('query' => 'realm='. urlencode($relying_party['realm']))) .'</p>';
+  return $form;
 }
 
 /**
  * Submit handler for openid_provider_sso_confirm().
  */
 function openid_provider_sso_confirm_submit($form, &$form_state) {
+  openid_provider_sso_redirect($form['#realm']);
+}
 
-  if ($relying_party = openid_provider_sso_relying_party($form['#realm'])) {
-    global $user;
+/**
+ * Redirect user to RP defined by $realm, passing on the user's identifier.
+ *
+ * The identifier key in the query will tell the RP which user is trying to log
+ * in. The RP will use this information to form an OpenID identifier following
+ * the pattern [OpenIDproviderURL]/openid/$identifier
+ * which will (if properly set up) point back at us.
+ *
+ * The RP will use this identifier to issue a standard OpenID authentication
+ * request back to this site.
+ *
+ * @see openid_sso module.
+ */
+function openid_provider_sso_redirect($realm) {
+  global $user;
+  if (($relying_party = openid_provider_sso_relying_party($realm)) && $user->uid) {
     $identifier = urlencode($user->name);
     drupal_goto($relying_party['realm'], "q=user&identifier=$identifier");
   }
