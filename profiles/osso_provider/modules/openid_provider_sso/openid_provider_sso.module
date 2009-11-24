@@ -89,6 +89,10 @@ function openid_provider_sso_user_submit($form, &$form_state) {
     module_load_include('inc', 'openid_provider');
     _openid_provider_rp_save($user->uid, $relying_party['realm'], TRUE);
 
+    // Suppress all previous messages, we are redirecting and we don't want to
+    // show them when the user comes back.
+    drupal_get_messages();
+
     // Redirect user to RP.
     openid_provider_sso_redirect($relying_party['realm']);
   }
