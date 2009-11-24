@@ -35,7 +35,7 @@ function osso_provider_profile_modules() {
  */
 function osso_provider_profile_details() {
   return array(
-    'name' => 'Apples',
+    'name' => 'OpenID Simple Sign-On Provider',
     'description' => 'Demo: Sets up an OpenID Identity Provider site with Simple Sign-On support.'
   );
 }
@@ -181,7 +181,7 @@ function osso_provider_profile_tasks(&$task, $url) {
 function osso_provider_form_alter(&$form, $form_state, $form_id) {
   if ($form_id == 'install_configure') {
     // Set default for site name field.
-    $form['site_information']['site_name']['#default_value'] = 'Apples';
+    $form['site_information']['site_name']['#default_value'] = $_SERVER['HTTP_HOST'];
     $form['site_information']['site_mail']['#default_value'] = 'admin@'. $_SERVER['HTTP_HOST'];
     $form['admin_account']['account']['name']['#default_value'] = 'admin';
     $form['admin_account']['account']['mail']['#default_value'] = 'admin@'. $_SERVER['HTTP_HOST'];
