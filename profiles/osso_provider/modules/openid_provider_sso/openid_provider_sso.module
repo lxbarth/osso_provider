@@ -223,5 +223,5 @@ function openid_provider_sso_relying_party($realm) {
  * @todo: expand.
  */
 function theme_openid_provider_sso_welcome($relying_party) {
-  return t('<p>!relying_party is part of !site_name.</p><p>You can log in with your existing !site_name account.</p>', array('!relying_party' => $relying_party, '!site_name' => variable_get('site_name', 'Drupal')));
+  return '<div class="sso-welcome">'. t('<p><strong>!relying_party</strong> is part of !site_name.</p><p>You can log in with your existing !site_name account or sign up for a new one.</p>', array('!relying_party' => $relying_party, '!site_name' => variable_get('site_name', 'Drupal'))) .'</div>';
 }
