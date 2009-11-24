@@ -101,12 +101,16 @@ function openid_provider_sso_user_submit($form, &$form_state) {
 
 /**
  * Logout callback, just like user_logout() with the only difference that it
- * redirects to user for a login after its done. This callback is necessary
- * as drupal_goto() does not support queries in the destination path.
+ * redirects to user to login page after it is done.
+ *
+ * This callback is necessary as drupal_goto() does not support queries in the
+ * destination path, hence directing a user to the logout page and then further
+ * redirecting her to a page identified by a path (q portion of query) and a
+ * query (any other portion) is not possible with Drupal core.
  */
 function openid_provider_sso_logout_login() {
 
-  // +++ Start pillaged from user_logout().
+  // +++ Start copy from user_logout().
   global $user;
 
   watchdog('user', 'Session closed for %name.', array('%name' => $user->name));
@@ -119,13 +123,13 @@ function openid_provider_sso_logout_login() {
 
   // Load the anonymous user
   $user = drupal_anonymous_user();
-  // +++ End pillaged from user_logout().
+  // +++ End copy from user_logout().
 
   // Redirect to user login, pass on realm if present.
   $query = '';
   if ($_GET['realm']) {
     $query = 'realm='. $_GET['realm'];
-  }drupal_set_message($query);
+  }
   drupal_goto('user', $query);
 }
 
