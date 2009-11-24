@@ -18,6 +18,19 @@ function openid_provider_sso_theme() {
 }
 
 /**
+ * Implementation of hook_menu().
+ */
+function openid_provider_sso_menu() {
+  $items = array();
+  $items['logout/login'] = array(
+    'page callback' => 'openid_provider_sso_logout_login',
+    'access callback' => 'user_is_logged_in',
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+/**
  * Implementation of hook_menu_alter().
  *
  * Replace registration page with custom callback to reroute user depending on
@@ -87,6 +100,36 @@ function openid_provider_sso_user_submit($form, &$form_state) {
 }
 
 /**
+ * Logout callback, just like user_logout() with the only difference that it
+ * redirects to user for a login after its done. This callback is necessary
+ * as drupal_goto() does not support queries in the destination path.
+ */
+function openid_provider_sso_logout_login() {
+
+  // +++ Start pillaged from user_logout().
+  global $user;
+
+  watchdog('user', 'Session closed for %name.', array('%name' => $user->name));
+
+  // Destroy the current session:
+  session_destroy();
+  // Only variables can be passed by reference workaround.
+  $null = NULL;
+  user_module_invoke('logout', $null, $user);
+
+  // Load the anonymous user
+  $user = drupal_anonymous_user();
+  // +++ End pillaged from user_logout().
+
+  // Redirect to user login, pass on realm if present.
+  $query = '';
+  if ($_GET['realm']) {
+    $query = 'realm='. $_GET['realm'];
+  }drupal_set_message($query);
+  drupal_goto('user', $query);
+}
+
+/**
  * Custom user callback.
  */
 function openid_provider_sso_user_page() {
@@ -120,7 +163,7 @@ function openid_provider_sso_confirm($form_state, $realm) {
       '#type' => 'submit',
       '#value' => t('Log in'),
     );
-    $form['other_user']['#value'] .= '<p>'. l(t('Are you not @user?', array('@user' => $user->name)), 'logout', array('query' => 'destination=user/register')) .'</p>';
+    $form['other_user']['#value'] .= '<p>'. l(t('Are you not @user?', array('@user' => $user->name)), 'logout/login', array('query' => 'realm='. urlencode($relying_party['realm']))) .'</p>';
     return $form;
   }
 }
