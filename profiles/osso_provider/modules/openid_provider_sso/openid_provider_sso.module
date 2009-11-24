@@ -61,7 +61,7 @@ function openid_provider_sso_user($op, &$edit, &$account) {
 /**
  * Implementation of hook_form_alter().
  *
- * Redirect user to relying party after registration.
+ * Redirect user to relying party after registration or login.
  */
 function openid_provider_sso_form_alter(&$form, $form_state, $form_id) {
 
