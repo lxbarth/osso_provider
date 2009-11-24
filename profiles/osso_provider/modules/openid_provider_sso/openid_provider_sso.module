@@ -89,11 +89,19 @@ function openid_provider_sso_user_submit($form, &$form_state) {
   global $user;
   if (openid_provider_sso_relying_party($form['#realm']) && !empty($user->uid)) {
 
-    // Save RP realm to list of accepted sites to spare the user another round
-    // trip from RP to here.
+    // Save RP realm to list of accepted sites to spare the user another
+    // confirmation click when coming back from the RP with the authentication
+    // request. The implicit understanding here is that the user agrees to share
+    // her identity on all sites in the trusted web of sites.
     module_load_include('inc', 'openid_provider');
     _openid_provider_rp_save($user->uid, $form['#realm'], TRUE);
 
+    // Redirect user to RP. The identifier key in the query will tell the RP
+    // which user is trying to log in. The RP will use this information to form
+    // an OpenID identifier following the pattern
+    // [OpenIDproviderURL]/openid/$identifier
+    // and use this identifier to issue an authentication request back to this
+    // site.
     $identifier = urlencode($user->name);
     drupal_goto($form['#realm'], "q=user&identifier=$identifier");
   }
