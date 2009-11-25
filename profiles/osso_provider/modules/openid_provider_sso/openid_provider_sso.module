@@ -82,13 +82,6 @@ function openid_provider_sso_user_submit($form, &$form_state) {
   global $user;
   if (($relying_party = openid_provider_sso_relying_party($form['#realm'])) && !empty($user->uid)) {
 
-    // Save RP realm to list of accepted sites to spare the user another
-    // confirmation click when coming back from the RP with the authentication
-    // request. The implicit understanding here is that the user agrees to share
-    // her identity on all sites in the trusted web of sites.
-    module_load_include('inc', 'openid_provider');
-    _openid_provider_rp_save($user->uid, $relying_party['realm'], TRUE);
-
     // Suppress all previous messages, we are redirecting and we don't want to
     // show them when the user comes back.
     drupal_get_messages();
@@ -185,6 +178,11 @@ function openid_provider_sso_confirm_submit($form, &$form_state) {
 /**
  * Redirect user to RP defined by $realm, passing on the user's identifier.
  *
+ * Save RP realm to list of accepted sites to spare the user another
+ * confirmation click when coming back from the RP with the authentication
+ * request. The implicit understanding here is that the user agrees to share
+ * her identity on all sites in the trusted web of sites.
+ *
  * The identifier key in the query will tell the RP which user is trying to log
  * in. The RP will use this information to form an OpenID identifier following
  * the pattern [OpenIDproviderURL]/openid/$identifier
@@ -198,6 +196,10 @@ function openid_provider_sso_confirm_submit($form, &$form_state) {
 function openid_provider_sso_redirect($realm) {
   global $user;
   if (($relying_party = openid_provider_sso_relying_party($realm)) && $user->uid) {
+
+    module_load_include('inc', 'openid_provider');
+    _openid_provider_rp_save($user->uid, $relying_party['realm'], TRUE);
+
     $identifier = urlencode($user->name);
     drupal_goto($relying_party['realm'], "q=user&identifier=$identifier");
   }
