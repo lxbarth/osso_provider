@@ -3,7 +3,7 @@
 /**
  * Look up user id by author name.
  */
-class ActivityFeedsUserParser extends FeedsSyndicationParser {
+class ActivityFeedsUserParser extends FeedsSimplePieParser {
 
   /**
    * If the requested element is uid, look up the user by name.

@@ -17,9 +17,9 @@ function activity_feeds_feeds_plugins() {
     'ActivityFeedsUserParser' => array(
       'name' => 'Activity Feeds Parser',
       'description' => 'Look up users by name.',
-      'help' => 'Just like Syndication parser with one difference: looks up users by RSS/Atom author name, look for User ID mapping source.',
+      'help' => 'Just like SimplePie parser with one difference: looks up users by RSS/Atom author name, look for User ID mapping source.',
       'handler' => array(
-        'parent' => 'FeedsSyndicationParser',
+        'parent' => 'FeedsSimplePieParser',
         'class' => 'ActivityFeedsUserParser',
         'file' => 'ActivityFeedsUserParser.inc',
         'path' => drupal_get_path('module', 'activity_feeds'),
