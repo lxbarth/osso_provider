@@ -8,10 +8,9 @@ class ActivityFeedsUserParser extends FeedsSimplePieParser {
   /**
    * If the requested element is uid, look up the user by name.
    *
-   * @todo: this could be folded into FeedsSyndicationParser.
+   * @todo: this could be folded into FeedsSimplePieParser.
    */
   public function getSourceElement($item, $element_key) {
-
     if ($element_key == 'uid') {
       if (isset($item['author_name']) && ($uid = db_result(db_query('SELECT uid FROM {users} WHERE name = "%s"', $item['author_name'])))) {
         return $uid;
