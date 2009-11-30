@@ -8,7 +8,7 @@ function _activity_feeds_node_info() {
     'comment_feed' => array(
       'name' => t('Comment feed'),
       'module' => 'features',
-      'description' => '',
+      'description' => t('Aggregate user comments from other sites, relate to local users.'),
       'has_title' => '1',
       'title_label' => t('Title'),
       'has_body' => '1',
