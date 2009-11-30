@@ -1,0 +1,29 @@
+<?php
+
+/**
+ * Implementation of hook_ctools_plugin_api().
+ */
+function activity_feeds_ctools_plugin_api($owner, $api) {
+  if ($owner == 'feeds' && $api == 'plugins') {
+    return array('version' => 1);
+  }
+}
+
+/**
+ * Implementation of hook_feeds_plugins().
+ */
+function activity_feeds_feeds_plugins() {
+  return array(
+    'ActivityFeedsUserParser' => array(
+      'name' => 'Activity Feeds Parser',
+      'description' => 'Look up users by name.',
+      'help' => 'Just like Syndication parser with one difference: looks up users by RSS/Atom author name, look for User ID mapping source.',
+      'handler' => array(
+        'parent' => 'FeedsSyndicationParser',
+        'class' => 'ActivityFeedsUserParser',
+        'file' => 'ActivityFeedsUserParser.inc',
+        'path' => drupal_get_path('module', 'activity_feeds'),
+      ),
+    ),
+  );
+}
