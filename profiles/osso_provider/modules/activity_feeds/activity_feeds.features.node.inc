@@ -5,6 +5,17 @@
  */
 function _activity_feeds_node_info() {
   $items = array(
+    'comment_feed' => array(
+      'name' => t('Comment feed'),
+      'module' => 'features',
+      'description' => '',
+      'has_title' => '1',
+      'title_label' => t('Title'),
+      'has_body' => '1',
+      'body_label' => t('Body'),
+      'min_word_count' => '0',
+      'help' => '',
+    ),
     'post_feed' => array(
       'name' => t('Post feed'),
       'module' => 'features',
