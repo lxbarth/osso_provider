@@ -1,5 +1,4 @@
 core = "6.x"
 description = "Custom feature; pulls in posts and comments from other Drupal sites and relates them to local users by their author names."
-features[node][] = "comment_feed"
-features[node][] = "post_feed"
+features[node][] = "activity_feed"
 name = "Activity Feeds"

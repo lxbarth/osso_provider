@@ -5,21 +5,10 @@
  */
 function _activity_feeds_node_info() {
   $items = array(
-    'comment_feed' => array(
-      'name' => t('Comment feed'),
+    'activity_feed' => array(
+      'name' => t('Activity feed'),
       'module' => 'features',
-      'description' => t('Aggregate user comments from other sites, relate to local users.'),
-      'has_title' => '1',
-      'title_label' => t('Title'),
-      'has_body' => '1',
-      'body_label' => t('Body'),
-      'min_word_count' => '0',
-      'help' => '',
-    ),
-    'post_feed' => array(
-      'name' => t('Post feed'),
-      'module' => 'features',
-      'description' => t('Aggregate user posts from other sites, relate to local users.'),
+      'description' => t('Aggregates content and relates it to users.'),
       'has_title' => '1',
       'title_label' => t('Title'),
       'has_body' => '1',
