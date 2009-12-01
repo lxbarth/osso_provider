@@ -1,4 +1,7 @@
 core = "6.x"
+dependencies[] = "data"
+dependencies[] = "views"
 description = "Custom feature; pulls in posts and comments from other Drupal sites and relates them to local users by their author names."
 features[node][] = "activity_feed"
+features[views][] = "activity"
 name = "Activity Feeds"
