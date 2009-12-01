@@ -5,6 +5,9 @@ function hubnet_preprocess_page (&$vars) {
   if ($logged_in == FALSE && $vars['template_files']['0'] == 'page-user') {
     unset($vars['tabs']);
   }
+  if (module_exists('osso_provider')) {
+    $vars['hub_bar'] = osso_provider_hub_bar();
+  }
 }
 
 function hubnet_preprocess_node (&$vars) {

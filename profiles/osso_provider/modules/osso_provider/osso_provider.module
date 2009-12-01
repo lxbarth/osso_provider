@@ -73,3 +73,28 @@ function osso_provider_user_menu_title() {
 function osso_provider_register_menu_title() {
   return t('Sign up');
 }
+
+/**
+ * Generate hub bar.
+ */
+function osso_provider_hub_bar() {
+  global $user;
+
+  $output =
+  "<ul class='links hub-links'>
+    <li class='hubnet'><a href='#'>Hubnet</a></li>
+    <li><a href='#'>BlogRiver</a></li>
+    <li><a href='#'>NewsGale</a></li>
+  </ul>
+  <ul class='links user-links'>";
+  if ($user) {
+    $output .= "
+      <li class='username'>Hello, {$user->name}</li>
+      <li class='logout'>". l(t('Log out'), 'logout') ."</li>";
+  }
+  else {
+      $output .= "<li class='login'>". l(t('Log in / Sign up'), 'user') ."</li>";
+  }
+  $output .= "</ul>";
+  return $output;
+}

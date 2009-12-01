@@ -8,23 +8,12 @@
   <body <?php print drupal_attributes($attr) ?>>
 
   <?php if (!empty($admin)) print $admin ?>
-  
+
+  <?php if ($hub_bar): ?>
   <div id='hub-bar'><div class='limiter clear-block'>
-    <ul class='links hub-links'>
-      <li class='hubnet'><a href='#'>Hubnet</a></li>
-      <li><a href='#'>BlogRiver</a></li>
-      <li><a href='#'>NewsGale</a></li>
-    </ul>
-    <ul class='links user-links'>
-      <?php if ($logged_in): ?>
-        <li class='username'>Hello, <?php print $user->name ?></li>
-        <li class='logout'><a href='<?php print $base_path ?>logout'>Log out</a></li>
-      <?php endif; ?>
-      <?php if (!$logged_in): ?>
-        <li class='login'><a href='<?php print $base_path ?>user/login'>Log in / Sign up</a></li>
-      <?php endif; ?>
-    </ul>
+    <?php print $hub_bar ?>
   </div></div>
+  <?php endif; ?>
 
   <?php if ($header): ?>
     <div id='header'><div class='limiter clear-block'>
@@ -47,7 +36,7 @@
     <?php if (isset($secondary_links)) : ?>
       <?php print theme('links', $secondary_links, array('class' => 'links secondary-links')) ?>
     <?php endif; ?>
-  </div></div> 
+  </div></div>
 
   <div id='page'><div class='limiter clear-block'>
 
