@@ -13,6 +13,10 @@ function osso_provider_user($op, &$edit, &$account) {
     case 'delete':
       path_set_alias('user/'. $account->uid);
       break;
+    case 'view':
+      // Remove all default content from the user page.
+      $account->content = array();
+      break;
   }
 }
 
