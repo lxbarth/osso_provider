@@ -11,6 +11,9 @@ function osso_provider_profile_modules() {
   return array(
     'color',
     'comment',
+    'content',
+    'text',
+    'optionwidgets',
     'context',
     'context_ui',
     'ctools',
