@@ -11,6 +11,9 @@ function osso_provider_profile_modules() {
   return array(
     'color',
     'comment',
+    'context',
+    'context_ui',
+    'ctools',
     'help',
     'menu',
     'taxonomy',
@@ -21,6 +24,14 @@ function osso_provider_profile_modules() {
     'path',
     'strongarm',
     'xrds_simple',
+    'features',
+    'views',
+    'views_ui',
+    'data',
+    'data_ui',
+    'feeds',
+    'feeds_ui',
+    'activity_feeds',
   );
 }
 
