@@ -11,6 +11,9 @@ function osso_provider_profile_modules() {
   return array(
     'color',
     'comment',
+    'content',
+    'text',
+    'optionwidgets',
     'context',
     'context_ui',
     'ctools',
@@ -174,9 +177,9 @@ function osso_provider_profile_tasks(&$task, $url) {
     // blowing away our changes.
     _osso_provider_system_theme_data();
     db_query("UPDATE {system} SET status = 0 WHERE type = 'theme'");
-    db_query("UPDATE {system} SET status = 1 WHERE type = 'theme' AND name = 'singular'");
-    db_query("UPDATE {blocks} SET region = '' WHERE theme = 'singular'");
-    variable_set('theme_default', 'singular');
+    db_query("UPDATE {system} SET status = 1 WHERE type = 'theme' AND name = 'hubnet'");
+    db_query("UPDATE {blocks} SET region = '' WHERE theme = 'hubnet'");
+    variable_set('theme_default', 'hubnet');
 
     $task = 'finished';
   }

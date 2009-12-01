@@ -1,6 +1,15 @@
 <?php
 
 /**
+ * Implementation of hook_content_default_fields().
+ */
+function activity_feeds_content_default_fields() {
+  module_load_include('inc', 'activity_feeds', 'activity_feeds.defaults');
+  $args = func_get_args();
+  return call_user_func_array('_activity_feeds_content_default_fields', $args);
+}
+
+/**
  * Implementation of hook_context_default_contexts().
  */
 function activity_feeds_context_default_contexts() {
