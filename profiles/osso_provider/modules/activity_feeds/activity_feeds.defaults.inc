@@ -6,54 +6,6 @@
 function _activity_feeds_content_default_fields() {
   $fields = array();
 
-  // Exported field: field_predicate
-  $fields[] = array(
-    'field_name' => 'field_predicate',
-    'type_name' => 'activity_feed',
-    'display_settings' => array(
-      'label' => array(
-        'format' => 'above',
-        'exclude' => 0,
-      ),
-      'teaser' => array(
-        'format' => 'default',
-        'exclude' => 0,
-      ),
-      'full' => array(
-        'format' => 'default',
-        'exclude' => 0,
-      ),
-      '4' => array(
-        'format' => 'default',
-        'exclude' => 0,
-      ),
-    ),
-    'widget_active' => '1',
-    'type' => 'text',
-    'required' => '1',
-    'multiple' => '0',
-    'module' => 'text',
-    'active' => '1',
-    'text_processing' => '0',
-    'max_length' => '',
-    'allowed_values' => 'posted
-commented',
-    'allowed_values_php' => '',
-    'widget' => array(
-      'default_value' => array(
-        '0' => array(
-          'value' => '',
-        ),
-      ),
-      'default_value_php' => NULL,
-      'label' => 'Predicate',
-      'weight' => '31',
-      'description' => 'Predicate to use in listings. E. g. "User <strong>posted</strong> Lorem ipsum".',
-      'type' => 'optionwidgets_select',
-      'module' => 'optionwidgets',
-    ),
-  );
-
   // Exported field: field_type
   $fields[] = array(
     'field_name' => 'field_type',
@@ -105,7 +57,6 @@ Comment',
   // Translatables
   array(
     t('Activity type'),
-    t('Predicate'),
   );
 
   return $fields;
