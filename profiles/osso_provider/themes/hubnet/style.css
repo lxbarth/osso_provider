@@ -14,10 +14,15 @@ div#footer {
   width: 800px;
 }
 
+input.form-text,
+textarea { padding: 4px; }
+
 /* == Links =========================================================== */
 
 ul.links li { padding: 0px 10px; }
 
+h1 a,
+h2 a,
 .breadcrumb a,
 ul.links a { text-decoration: none; }
 
@@ -33,7 +38,7 @@ div#hub-bar { padding-top: 10px; }
 }
 
 #hub-bar a { 
-  padding: 2px 5px;
+  padding: 2px 0px;
 }
 
 #hub-bar ul.primary-links .first {
@@ -67,7 +72,6 @@ div#hub-bar { padding-top: 10px; }
 #branding h1.site-name a {
   color: #fff;
   font-size: 30px;
-  text-decoration: none;
 }
 
 #branding h2.site-slogan {
@@ -76,13 +80,29 @@ div#hub-bar { padding-top: 10px; }
   font-weight: normal;
 }
 
+#branding a.add-story {
+  background-color: #fff;
+  color: #a02c2c;
+  float: right;
+  font-weight: bold;
+  margin: 10px;
+  padding: 5px 15px;
+  text-decoration: none;
+  text-transform: uppercase;
+  -moz-border-radius: 15px;
+}
+
+#branding a.add-story:before { content:"+ "; }
+
+#branding a.add-story:hover { opacity: 0.8; }
+
 /* == Navigation ====================================================== */
 
 div#navigation { padding-top: 0px; }
 
 #navigation div.limiter {
   background-color: #a02c2c;
-  padding: 5px;
+  padding: 5px 0px;
   -moz-border-radius-bottomleft: 3px;
   -moz-border-radius-bottomright: 3px;
 }
@@ -128,17 +148,12 @@ h2.page-title {
   font-weight: normal;
   padding: 10px;
   border-bottom: 1px solid #ccc;
-  margin: 5px 0px 9px;
 }
 
-div#content { position: relative; }
-
 ul.primary-tabs {
-  background-color: #ddd;
-  margin-bottom: 10px;
+  background-color: #e0e0e0;
+  margin: 0px 0px 10px;
   padding: 5px 5px 0px;
-/*  -moz-border-radius-topleft: 8px;
-  -moz-border-radius-topright: 8px;*/
 }
 
 ul.primary-tabs li { padding: 0px; }
@@ -146,7 +161,6 @@ ul.primary-tabs li { padding: 0px; }
 .primary-tabs a {
   background-color: #eee;
   color: #666;
-  font-size: 12px;
   margin-right: 1px;
   padding: 5px 10px;
   -moz-border-radius-topleft: 3px;
@@ -157,24 +171,68 @@ ul.primary-tabs li { padding: 0px; }
 
 .primary-tabs a:hover { background-color: #f3f3f3; }
 
-/* == Page-User ======================================================= */
+/* == Node ============================================================ */
 
-/*body.page-user ul.primary-tabs {
-  background-color: transparent;
+div.node {
+  padding-bottom: 9px;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 10px;
+}
+
+h2.node-title {
+  font-size: 20px;
+  padding: 10px 10px 0px;
+}
+
+h2.node-title a { color: #a02c2c; }
+
+div.node-submitted,
+div.node-content { margin: 10px; }
+
+.node-submitted {
+  color: #666;
+  font-size: 12px;
+  font-style: italic;
+}
+
+.node-links ul.links li {
   float: right;
+  padding: 0px;
+}
+
+.node-links a {
+  background-color: #eee;
+  color: #666;
+  margin-right: 10px;
+  padding: 2px 10px;
+  -moz-border-radius: 5px;
+}
+
+.node-links a:hover { background-color: #e0e0e0; }
+
+/* == OSSO Sidebar ==================================================== */
+
+ul.osso-tabs {
+  background-color: #fff;
   padding: 0px;
   width: 320px;
 }
 
-body.page-user .primary-tabs a {
+ul.osso-tabs li { padding: 0px; }
+
+.osso-tabs a {
   background-color: #ccc;
   color: #333;
+  font-size: 12px;
+  margin-right: 1px;
+  padding: 5px 10px;
+  -moz-border-radius-topleft: 3px;
+  -moz-border-radius-topright: 3px;
 }
 
-body.page-user .primary-tabs li.active a { background-color: #e6e6e6; }
+.osso-tabs li a.active { background-color: #e6e6e6; }
 
-body.page-user .primary-tabs a:hover { background-color: #d2d2d2; }
-*/
+.osso-tabs a:hover { background-color: #d2d2d2; }
 
 form#user-register,
 form#user-pass,
@@ -182,16 +240,22 @@ form#user-login {
   background-color: #e6e6e6;
   clear: right;
   float: right;
-  padding: 10px;
-  width: 300px;
+  width: 320px;
 }
+
+#user-register .form-item,
+#user-pass .form-item,
+#user-login .form-item { margin: 10px; }
+
+#user-register .form-item .form-item,
+#user-pass .form-item .form-item,
+#user-login .form-item .form-item { margin: 0px; }
 
 #user-register input.form-text,
 #user-pass input.form-text,
 #user-login input.form-text {
   background-color: #fff;
   font-size: 18px;
-  padding: 4px;
   width: 290px;
 }
 
@@ -203,7 +267,19 @@ form#user-login {
   float: right;
   font-size: 11px;
   font-weight: bold;
-  margin-top: 5px;
+  margin: 0px 10px 10px 0px;
   padding: 5px 15px;
   text-transform: uppercase;
   -moz-border-radius: 15px;
+}
+
+/* == Footer ========================================================== */
+
+div#footer { padding-bottom: 10px; }
+
+#footer div.limiter {
+  background-color: #eee;
+  color: #999;
+  padding: 5px 10px;
+  -moz-border-radius: 3px;
+}
