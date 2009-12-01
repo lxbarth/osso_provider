@@ -10,3 +10,4 @@ features[feeds_importer][] = "activity_feed"
 features[node][] = "activity_feed"
 features[views][] = "activity"
 name = "Activity Feeds"
+package = Custom
