@@ -1,6 +1,55 @@
 <?php
 
 /**
+ * Helper to implementation of hook_context_default_contexts().
+ */
+function _activity_feeds_context_default_contexts() {
+  $items = array();
+
+  $items[] = array(
+    'namespace' => 'provider',
+    'attribute' => 'section',
+    'value' => 'frontpage',
+    'description' => '',
+    'path' => array(
+      '<front>' => '<front>',
+    ),
+    'block' => array(
+      'views_activity-block_1' => array(
+        'module' => 'views',
+        'delta' => 'activity-block_1',
+        'weight' => 10,
+        'region' => 'content',
+        'status' => '0',
+        'label' => 'activity: Block',
+        'type' => 'context_ui',
+      ),
+    ),
+  );
+  $items[] = array(
+    'namespace' => 'provider',
+    'attribute' => 'section',
+    'value' => 'profile',
+    'description' => 'User profile pages',
+    'user' => array(
+      '0' => 2,
+    ),
+    'block' => array(
+      'views_activity-block_2' => array(
+        'module' => 'views',
+        'delta' => 'activity-block_2',
+        'weight' => 11,
+        'region' => 'content',
+        'status' => '0',
+        'label' => 'activity: Current profile user',
+        'type' => 'context_ui',
+      ),
+    ),
+  );
+  return $items;
+}
+
+/**
  * Helper to implementation of hook_ctools_plugin_api().
  */
 function _activity_feeds_ctools_plugin_api() {
