@@ -27,8 +27,14 @@ function openid_provider_sso_menu() {
     'access callback' => 'user_is_logged_in',
     'type' => MENU_CALLBACK,
   );
+  // @todo: move to sso/request
   $items['sso-request'] = array(
     'page callback' => 'openid_provider_sso_request',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+  $items['sso/trusted-sites'] = array(
+    'page callback' => 'openid_provider_sso_relying_parties_opml',
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
   );
@@ -148,6 +154,29 @@ function openid_provider_sso_request() {
 
   // Invalid request.
   return drupal_access_denied();
+}
+
+/**
+ * Page callback for rendering a list of trusted sites.
+ */
+function openid_provider_sso_relying_parties_opml() {
+
+  // Generate an OPML of trusted sites.
+  $output = '<?xml version="1.0" encoding="utf-8"?>'."\n";
+  $output .= '<opml version="2.0">'."\n";
+  $output .= '<head>'."\n";
+  $output .= '  <title>'. t('Trusted relying parties for !site', array('!site' => variable_get('site_name', 'Drupal'))) .'</title>'."\n";
+  $output .= '  <dateCreated>'. format_date(time(), 'custom', 'r', 0) .'</dateCreated>'."\n";
+  $output .= '</head>'."\n";
+  $output .= '<body>'."\n";
+  foreach (variable_get('openid_provider_sso_rps', array()) as $rp) {
+    $output .= '  <outline text="'. check_plain($rp['name']) .'" htmlUrl="'. check_url($rp['realm']) .'"/>'."\n";
+  }
+  $output .= '</body>'."\n";
+  $output .= '</opml>';
+
+  drupal_set_header('Content-Type=text/x-opml');
+  print $output;
 }
 
 /**
