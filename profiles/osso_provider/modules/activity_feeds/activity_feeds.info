@@ -1,4 +1,5 @@
 core = "6.x"
+dependencies[] = "features"
 dependencies[] = "data"
 dependencies[] = "context"
 dependencies[] = "feeds"
