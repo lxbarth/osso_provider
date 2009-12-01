@@ -1,6 +1,22 @@
 <?php
 
 /**
+ * Implementation of hook_user().
+ */
+function osso_provider_user($op, &$edit, &$account) {
+  switch ($op) {
+    case 'insert':
+    case 'update':
+      // Set an alias for this user.
+      path_set_alias('user/'. $account->uid, 'user/'. $account->name);
+      break;
+    case 'delete':
+      path_set_alias('user/'. $account->uid);
+      break;
+  }
+}
+
+/**
  * Implementation of hook_strongarm().
  */
 function osso_provider_strongarm() {
