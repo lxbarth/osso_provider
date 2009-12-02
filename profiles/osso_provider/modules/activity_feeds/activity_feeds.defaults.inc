@@ -91,6 +91,28 @@ function _activity_feeds_context_default_contexts() {
   $items[] = array(
     'namespace' => 'provider',
     'attribute' => 'section',
+    'value' => 'login',
+    'description' => '',
+    'path' => array(
+      'user' => 'user',
+      'user/password' => 'user/password',
+      'user/register' => 'user/register',
+    ),
+    'block' => array(
+      'osso_provider_login_message' => array(
+        'module' => 'osso_provider',
+        'delta' => 'login_message',
+        'weight' => 10,
+        'region' => 'content',
+        'status' => '0',
+        'label' => 'Login page message',
+        'type' => 'context_ui',
+      ),
+    ),
+  );
+  $items[] = array(
+    'namespace' => 'provider',
+    'attribute' => 'section',
     'value' => 'profile',
     'description' => 'User profile pages',
     'user' => array(
