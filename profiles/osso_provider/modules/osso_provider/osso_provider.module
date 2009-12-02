@@ -149,7 +149,7 @@ function osso_provider_block_dummy_profile() {
   $items = array(
     '<span class="user-profile-picture"></span>',
     '<span class="item-title">Name:</span> <span class="item-content">'. $name .'</span>',
-    '<span class="item-title">Location:</span> <span class="item-content">Washington, DC</span>',
+    '<span class="item-title">Location:</span> <span class="item-content">Ohio</span>',
     '<span class="item-title">Bio:</span> <span class="item-content">One-hundred and forty characters about the user would be a good thing to put in this area. Of course, that number is completely arbitrary.</span>',
   );
   $content = theme('item_list', $items, NULL, 'ul', array('class' => 'user-profile'));
