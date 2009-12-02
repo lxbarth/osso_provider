@@ -64,7 +64,7 @@ function openid_provider_sso_user($op, &$edit, &$account) {
  */
 function openid_provider_sso_form_alter(&$form, $form_state, $form_id) {
 
-  if ($form_id == 'user_register' || $form_id == 'user_login') {
+  if ($form_id == 'user_register' || $form_id == 'user_login' || $form_id == 'user_pass') {
 
     if ($relying_party = openid_provider_sso_relying_party($_GET['realm'])) {
       // Rewrites all user and user/register links to pass on realm.

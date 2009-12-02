@@ -24,5 +24,7 @@ Drupal.behaviors.openid_provider_sso = function() {
     $("a[href='" + base + "user/register']").attr('href', base + 'user/register?' + realm);
     $("a[href='" + base + "?q=user']").attr('href', base + '?q=user&' + realm);
     $("a[href='" + base + "user']").attr('href', base + 'user?' + realm);
+    $("a[href='" + base + "?q=user/password']").attr('href', base + '?q=user/password&' + realm);
+    $("a[href='" + base + "user/password']").attr('href', base + 'user/password?' + realm);
   }
 }

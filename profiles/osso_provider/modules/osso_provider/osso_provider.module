@@ -72,6 +72,9 @@ function osso_provider_form_alter(&$form, $form_state, $form_id) {
     );
     $form['links']['#value'] = theme('item_list', $links, NULL, 'ul', array('class' => 'links osso-tabs'));
     $form['links']['#weight'] = -40;
+
+    // We will present our own welcome text in a block.
+    unset($form['relying_welcome']);
   }
 }
 
@@ -163,8 +166,16 @@ function osso_provider_block_dummy_profile() {
  * Login page message.
  */
 function osso_provider_block_login_message() {
-  $content = t('<p>Your Sandusky account gives you access to all of Sandusky\'s sites with a single username and password.</p>');
-  return array(
-    'content' => $content,
-  );
+
+  if ($relying_party = openid_provider_sso_relying_party($_GET['realm'])) {
+
+    drupal_set_title(t('Sign in to @relying_party', array('@relying_party' => $relying_party['name'])));
+    $items = array();
+    $items[] = t('@relying_party is part of @site_name.', array('@site_name' => variable_get('site_name', 'Drupal'), '@relying_party' => $relying_party['name']));
+    $items[] = t('An account on @site_name gives you easy access to a series of sites with a single username and password.', array('@site_name' => variable_get('site_name', 'Drupal')));
+
+    return array(
+      'content' => theme('item_list', $items),
+    );
+  }
 }
