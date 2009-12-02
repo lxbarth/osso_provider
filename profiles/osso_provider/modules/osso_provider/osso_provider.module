@@ -1,6 +1,26 @@
 <?php
 
 /**
+ * Implementation of hook_block().
+ */
+function osso_provider_block($op = 'list', $delta = '') {
+  switch ($op) {
+    case 'list':
+      return array(
+        'dummy_profile' => array(
+          'info' => t('Dummy user profile'),
+        ),
+      );
+    case 'view':
+      if (function_exists('osso_provider_block_'. $delta)) {
+        return call_user_func('osso_provider_block_'. $delta);
+      }
+      break;
+  }
+}
+
+
+/**
  * Implementation of hook_user().
  */
 function osso_provider_user($op, &$edit, &$account) {
@@ -115,4 +135,14 @@ function osso_hub_bar() {
   $output .= theme('item_list', $items, NULL, 'ul', array('class' => 'links user-links'));
 
   return $output;
+}
+
+/**
+ * User profile block.
+ */
+function osso_provider_block_dummy_profile() {
+  return array(
+    'title' => t('Profile'),
+    'content' => t('some content'),
+  );
 }
