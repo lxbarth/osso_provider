@@ -71,7 +71,7 @@ function osso_provider_form_alter(&$form, $form_state, $form_id) {
       l(t('Forgot password?'), 'user/password')
     );
     $form['links']['#value'] = theme('item_list', $links, NULL, 'ul', array('class' => 'links osso-tabs'));
-    $form['links']['#weight'] = -10;
+    $form['links']['#weight'] = -40;
   }
 }
 
