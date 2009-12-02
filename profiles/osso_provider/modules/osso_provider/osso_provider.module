@@ -77,7 +77,7 @@ function osso_provider_register_menu_title() {
 /**
  * Generate hub bar.
  */
-function osso_provider_hub_bar() {
+function osso_hub_bar() {
   global $user;
 
   // Generate links to relying parties.
