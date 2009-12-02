@@ -47,7 +47,7 @@ function osso_provider_menu_alter(&$items) {
 function osso_provider_form_alter(&$form, $form_state, $form_id) {
   if ($form_id == 'user_register' || $form_id == 'user_login' || $form_id == 'user_pass') {
     $links = array(
-      l(t('Log in'), 'user/login'),
+      l(t('Log in'), 'user'),
       l(t('Sign up'), 'user/register'),
       l(t('Forgot password?'), 'user/password')
     );
