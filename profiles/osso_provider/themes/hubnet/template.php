@@ -8,6 +8,10 @@ function hubnet_preprocess_page (&$vars) {
   if (module_exists('osso_provider')) {
     $vars['hub_bar'] = osso_provider_hub_bar();
   }
+
+  $settings = variable_get('theme_hubnet_settings', array());
+  $vars['header_color'] = $settings['header_color'];
+  $vars['header_color_dark'] = $settings['header_color_dark'];
 }
 
 function hubnet_preprocess_node (&$vars) {
