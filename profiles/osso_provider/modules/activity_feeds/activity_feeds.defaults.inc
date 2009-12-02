@@ -97,6 +97,15 @@ function _activity_feeds_context_default_contexts() {
       '0' => 2,
     ),
     'block' => array(
+      'osso_provider_dummy_profile' => array(
+        'module' => 'osso_provider',
+        'delta' => 'dummy_profile',
+        'weight' => 11,
+        'region' => 'right',
+        'status' => '0',
+        'label' => 'Dummy user profile',
+        'type' => 'context_ui',
+      ),
       'views_activity-block_2' => array(
         'module' => 'views',
         'delta' => 'activity-block_2',

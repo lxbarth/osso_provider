@@ -213,6 +213,11 @@ function _activity_feeds_views_default_views() {
     'type' => 'none',
   ));
   $handler->override_option('title', 'Recent activity');
+  $handler->override_option('style_plugin', 'list');
+  $handler->override_option('style_options', array(
+    'grouping' => '',
+    'type' => 'ul',
+  ));
   $handler = $view->new_display('block', 'All users', 'block_1');
   $handler->override_option('fields', array(
     'field_type_value' => array(
