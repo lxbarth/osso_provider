@@ -97,6 +97,7 @@ function _activity_feeds_context_default_contexts() {
       'user' => 'user',
       'user/password' => 'user/password',
       'user/register' => 'user/register',
+      'sso/request' => 'sso/request',
     ),
     'block' => array(
       'osso_provider_login_message' => array(
