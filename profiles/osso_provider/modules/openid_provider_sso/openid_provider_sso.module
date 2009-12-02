@@ -27,8 +27,7 @@ function openid_provider_sso_menu() {
     'access callback' => 'user_is_logged_in',
     'type' => MENU_CALLBACK,
   );
-  // @todo: move to sso/request
-  $items['sso-request'] = array(
+  $items['sso/request'] = array(
     'page callback' => 'openid_provider_sso_request',
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
