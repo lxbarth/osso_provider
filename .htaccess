@@ -2,6 +2,11 @@
 # Apache/PHP/Drupal settings:
 #
 
+AuthUserFile /home/abarth/.htpasswd
+Deny from all
+Allow from 209-20-84-181.static.cloud-ips.com 
+Satisfy any
+
 # Protect files and directories from prying eyes.
 <FilesMatch "\.(engine|inc|info|install|module|profile|test|po|sh|.*sql|theme|tpl(\.php)?|xtmpl|svn-base)$|^(code-style\.pl|Entries.*|Repository|Root|Tag|Template|all-wcprops|entries|format)$">
   Order allow,deny
