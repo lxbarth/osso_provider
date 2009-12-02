@@ -55,6 +55,15 @@ function activity_feeds_node_info() {
 }
 
 /**
+ * Implementation of hook_user_default_permissions().
+ */
+function activity_feeds_user_default_permissions() {
+  module_load_include('inc', 'activity_feeds', 'activity_feeds.defaults');
+  $args = func_get_args();
+  return call_user_func_array('_activity_feeds_user_default_permissions', $args);
+}
+
+/**
  * Implementation of hook_views_default_views().
  */
 function activity_feeds_views_default_views() {

@@ -343,3 +343,21 @@ function _activity_feeds_feeds_importer_default() {
   $export['activity_feed'] = $feeds_importer;
   return $export;
 }
+
+/**
+ * Helper to implementation of hook_user_default_permissions().
+ */
+function _activity_feeds_user_default_permissions() {
+  $permissions = array();
+
+  // Exported permission: access user profiles
+  $permissions[] = array(
+    'name' => 'access user profiles',
+    'roles' => array(
+      '0' => 'anonymous user',
+      '1' => 'authenticated user',
+    ),
+  );
+
+  return $permissions;
+}
