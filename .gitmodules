@@ -1,0 +1,3 @@
+[submodule "profiles/osso_provider/themes/hubnet"]
+	path = profiles/osso_provider/themes/hubnet
+	url = git@github.com:lxbarth/hubnet.git
