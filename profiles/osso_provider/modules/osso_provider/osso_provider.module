@@ -194,7 +194,7 @@ function osso_provider_block_welcome_message() {
 
   $examples = array_pop($relying_parties);
   if ($relying_parties = implode(', ', $relying_parties)) {
-    $examples .= $relying_parties .' or '. $examples;
+    $examples = $relying_parties .' or '. $examples;
   }
 
   $content = t('<p>@site_name is your key to a host of Sandusky sites.</p>',  array('@site_name' => variable_get('site_name', 'Drupal')));
