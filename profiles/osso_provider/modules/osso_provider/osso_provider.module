@@ -174,7 +174,6 @@ function osso_provider_block_login_message() {
   if ($relying_party = openid_provider_sso_relying_party($_GET['realm'])) {
     drupal_set_title(t('Sign in to @relying_party', array('@relying_party' => $relying_party['name'])));
     $items[] = t('@relying_party is part of @site_name.', array('@site_name' => variable_get('site_name', 'Drupal'), '@relying_party' => $relying_party['name']));
-    $items[] = t('An account on @site_name gives you easy access to a series of sites with a single username and password.', array('@site_name' => variable_get('site_name', 'Drupal')));
   }
 
   $items[] = t('An account on @site_name gives you easy access to a series of sites with a single username and password.', array('@site_name' => variable_get('site_name', 'Drupal')));
