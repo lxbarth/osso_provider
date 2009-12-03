@@ -192,7 +192,7 @@ function openid_provider_sso_confirm($form_state, $relying_party) {
     '#type' => 'submit',
     '#value' => t('Log in'),
   );
-  $form['other_user']['#value'] .= '<p>'. l(t('Are you not @user?', array('@user' => $user->name)), 'logout/login', array('query' => 'realm='. urlencode($relying_party['realm']))) .'</p>';
+  $form['other_user']['#value'] .= '<p>'. l(t('Not @user?', array('@user' => $user->name)), 'logout/login', array('query' => 'realm='. urlencode($relying_party['realm']))) .'</p>';
   return $form;
 }
 
