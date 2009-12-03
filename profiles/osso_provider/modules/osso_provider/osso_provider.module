@@ -13,6 +13,9 @@ function osso_provider_block($op = 'list', $delta = '') {
         'login_message' => array(
           'info' => t('Login page message'),
         ),
+        'welcome_message' => array(
+          'info' => t('Welcome message'),
+        ),
       );
     case 'view':
       if (function_exists('osso_provider_block_'. $delta)) {
@@ -21,7 +24,6 @@ function osso_provider_block($op = 'list', $delta = '') {
       break;
   }
 }
-
 
 /**
  * Implementation of hook_user().
@@ -49,6 +51,7 @@ function osso_provider_user($op, &$edit, &$account) {
 function osso_provider_strongarm() {
   return array (
     'user_email_verification' => 0,
+    'site_frontpage' => 'activity',
   );
 }
 
@@ -178,4 +181,28 @@ function osso_provider_block_login_message() {
       'content' => theme('item_list', $items),
     );
   }
+}
+
+/**
+ * Welcome page message.
+ */
+function osso_provider_block_welcome_message() {
+  $relying_parties = array();
+
+  foreach (variable_get('openid_provider_sso_rps', array()) as $rp) {
+    $relying_parties[] = $rp['name'];
+  }
+
+  $examples = array_pop($relying_parties);
+  if ($relying_parties = implode(', ', $relying_parties)) {
+    $examples .= $relying_parties .' or '. $examples;
+  }
+
+  $content = t('<p>@site_name is your key to a host of Sandusky sites.</p>',  array('@site_name' => variable_get('site_name', 'Drupal')));
+  $content .= t('<p>Create an account once, and gain easy access with one username and password to sites like !examples.</p>',  array('!examples' => $examples));
+
+  return array(
+    'title' => t('Welcome'),
+    'content' => $content,
+  );
 }

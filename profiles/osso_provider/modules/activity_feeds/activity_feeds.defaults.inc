@@ -77,13 +77,13 @@ function _activity_feeds_context_default_contexts() {
       '<front>' => '<front>',
     ),
     'block' => array(
-      'views_activity-block_1' => array(
-        'module' => 'views',
-        'delta' => 'activity-block_1',
-        'weight' => 10,
-        'region' => 'content',
+      'osso_provider_welcome_message' => array(
+        'module' => 'osso_provider',
+        'delta' => 'welcome_message',
+        'weight' => 12,
+        'region' => 'right',
         'status' => '0',
-        'label' => 'activity: Block',
+        'label' => 'Welcome message',
         'type' => 'context_ui',
       ),
     ),
