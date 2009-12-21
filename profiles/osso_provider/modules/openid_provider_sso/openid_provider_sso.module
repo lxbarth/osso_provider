@@ -22,16 +22,6 @@ function openid_provider_sso_theme() {
  */
 function openid_provider_sso_menu() {
   $items = array();
-  $items['logout/login'] = array(
-    'page callback' => 'openid_provider_sso_logout_login',
-    'access callback' => 'user_is_logged_in',
-    'type' => MENU_CALLBACK,
-  );
-  $items['sso/request'] = array(
-    'page callback' => 'openid_provider_sso_request',
-    'access callback' => TRUE,
-    'type' => MENU_CALLBACK,
-  );
   $items['sso/trusted-sites'] = array(
     'page callback' => 'openid_provider_sso_relying_parties_opml',
     'access callback' => TRUE,
@@ -58,104 +48,6 @@ function openid_provider_sso_user($op, &$edit, &$account) {
 }
 
 /**
- * Implementation of hook_form_alter().
- *
- * Redirect user to relying party after registration or login.
- */
-function openid_provider_sso_form_alter(&$form, $form_state, $form_id) {
-
-  if ($form_id == 'user_register' || $form_id == 'user_login' || $form_id == 'user_pass') {
-
-    if ($relying_party = openid_provider_sso_relying_party($_GET['realm'])) {
-      // Rewrites all user and user/register links to pass on realm.
-      drupal_add_js(drupal_get_path('module', 'openid_provider_sso') .'/openid_provider_sso.js');
-
-      $form['#realm'] = $relying_party['realm'];
-      $form['#submit'][] = 'openid_provider_sso_user_submit';
-      $form['relying_welcome'] = array(
-        '#value' => theme('openid_provider_sso_welcome', $relying_party['name']),
-        '#weight' => -10,
-      );
-    }
-  }
-}
-
-/**
- * User form submit handler for redirections.
- */
-function openid_provider_sso_user_submit($form, &$form_state) {
-  global $user;
-  if (($relying_party = openid_provider_sso_relying_party($form['#realm'])) && !empty($user->uid)) {
-
-    // Suppress all previous messages, we are redirecting and we don't want to
-    // show them when the user comes back.
-    drupal_get_messages();
-
-    // Redirect user to RP.
-    openid_provider_sso_redirect($relying_party['realm']);
-  }
-}
-
-/**
- * Logout callback, just like user_logout() with the only difference that it
- * redirects to user to login page after it is done.
- *
- * This callback is necessary as drupal_goto() does not support queries in the
- * destination path, hence directing a user to the logout page and then further
- * redirecting her to a page identified by a path (q portion of query) and a
- * query (any other portion) is not possible with Drupal core.
- */
-function openid_provider_sso_logout_login() {
-
-  // +++ Start copy from user_logout().
-  global $user;
-
-  watchdog('user', 'Session closed for %name.', array('%name' => $user->name));
-
-  // Destroy the current session:
-  session_destroy();
-  // Only variables can be passed by reference workaround.
-  $null = NULL;
-  user_module_invoke('logout', $null, $user);
-
-  // Load the anonymous user
-  $user = drupal_anonymous_user();
-  // +++ End copy from user_logout().
-
-  // Redirect to user login, pass on realm if present and valid.
-  $query = '';
-  if ($relying_party = openid_provider_sso_relying_party($_GET['realm'])) {
-    $query = 'realm='. urlencode($relying_party['realm']);
-  }
-  drupal_goto('user', $query);
-}
-
-/**
- * Page callback for a Simple Sign-On request.
- *
- * If user arrives from trusted RP and is already authenticated on this site,
- * present here with a confirmation form verifying that she would like to use
- * the account presently authenticated on this site.
- *
- * If user is not authenticated, redirect to login form.
- */
-function openid_provider_sso_request() {
-
-  if ($relying_party = openid_provider_sso_relying_party($_GET['realm'])) {
-    global $user;
-    if ($user->uid) {
-      return drupal_get_form('openid_provider_sso_confirm', $relying_party);
-    }
-
-    // Redirect user to login form.
-    return drupal_goto('user', 'realm='. urlencode($relying_party['realm']));
-  }
-
-  // Invalid request.
-  return drupal_access_denied();
-}
-
-/**
  * Page callback for rendering a list of trusted sites.
  */
 function openid_provider_sso_relying_parties_opml() {
@@ -176,75 +68,6 @@ function openid_provider_sso_relying_parties_opml() {
 
   drupal_set_header('Content-Type=text/x-opml');
   print $output;
-}
-
-/**
- * Confirmation form for authentication.
- */
-function openid_provider_sso_confirm($form_state, $relying_party) {
-  global $user;
-
-  $form = array();
-  $form['#realm'] = $relying_party['realm'];
-  $form['intro']['#value'] = '<p>'. t('Log in to !relying_party as', array('!relying_party' => $relying_party['name'])) .'</p>';
-  $form['intro']['#value'] .= '<h3>'. $user->name .'</h3>';
-  $form['submit'] = array(
-    '#type' => 'submit',
-    '#value' => t('Log in'),
-  );
-  $form['other_user']['#value'] .= '<p>'. l(t('Not @user?', array('@user' => $user->name)), 'logout/login', array('query' => 'realm='. urlencode($relying_party['realm']))) .'</p>';
-  return $form;
-}
-
-/**
- * Submit handler for openid_provider_sso_confirm().
- */
-function openid_provider_sso_confirm_submit($form, &$form_state) {
-  openid_provider_sso_redirect($form['#realm']);
-}
-
-/**
- * Redirect user to RP defined by $realm, passing on the user's identifier.
- *
- * Save RP realm to list of accepted sites to spare the user another
- * confirmation click when coming back from the RP with the authentication
- * request. The implicit understanding here is that the user agrees to share
- * her identity on all sites in the trusted web of sites.
- *
- * The identifier key in the query will tell the RP which user is trying to log
- * in. The RP will use this information to form an OpenID identifier following
- * the pattern [OpenIDproviderURL]/openid/$identifier
- * which will (if properly set up) point back at us.
- *
- * The RP will use this identifier to issue a standard OpenID authentication
- * request back to this site.
- *
- * @see openid_sso module.
- */
-function openid_provider_sso_redirect($realm) {
-  global $user;
-  if (($relying_party = openid_provider_sso_relying_party($realm)) && $user->uid) {
-
-    module_load_include('inc', 'openid_provider');
-    _openid_provider_rp_save($user->uid, $relying_party['realm'], TRUE);
-
-    $identifier = urlencode($user->name);
-    drupal_goto($relying_party['realm'], "q=user&identifier=$identifier");
-  }
-}
-
-/**
- * Returns a relying party by its realm. Returns FALSE if no relying party of
- * given realm is known. $realm may be URL encoded.
- */
-function openid_provider_sso_relying_party($realm) {
-  $realm = trim(urldecode($realm), '/');
-  foreach (variable_get('openid_provider_sso_rps', array()) as $rp) {
-    if (trim($rp['realm'], '/') == $realm) {
-      return $rp;
-    }
-  }
-  return FALSE;
 }
 
 /**
