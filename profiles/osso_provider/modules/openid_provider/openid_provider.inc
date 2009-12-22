@@ -142,6 +142,9 @@ function openid_provider_authentication_response($request) {
     return openid_redirect_http($response['openid.return_to'], $response); 
   }
   else {
+    // Unset global post variable, otherwise FAPI will assume it has been 
+    // submitted against openid_provider_form.
+    unset($_POST);
     return drupal_get_form('openid_provider_form', $response, $realm);
   }
 }
