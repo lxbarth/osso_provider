@@ -31,6 +31,18 @@ function openid_provider_sso_menu() {
 }
 
 /**
+ * Implementation of hook_form_alter().
+ */
+function openid_provider_sso_form_alter(&$form, $form_state, $form_id) {
+  if (in_array($form_id, array('user_register', 'user_login', 'user_pass'))) {
+    if ($_GET['destination'] == 'openid/provider/continue') {
+      drupal_add_js(drupal_get_path('module', 'openid_provider_sso') .'/openid_provider_sso.js');
+      drupal_add_js('Drupal.settings.destination='. drupal_to_js($_GET['destination']) .';', 'inline');
+    }
+  }
+}
+
+/**
  * Page callback for rendering a list of trusted sites.
  */
 function openid_provider_sso_relying_parties_opml() {
