@@ -75,9 +75,6 @@ function osso_provider_form_alter(&$form, $form_state, $form_id) {
     );
     $form['links']['#value'] = theme('item_list', $links, NULL, 'ul', array('class' => 'links osso-tabs'));
     $form['links']['#weight'] = -40;
-
-    // We will present our own welcome text in a block.
-    unset($form['relying_welcome']);
   }
 }
 

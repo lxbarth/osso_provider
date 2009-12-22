@@ -9,15 +9,6 @@
  */
 
 /**
- * Implementation of hook_theme().
- */
-function openid_provider_sso_theme() {
-  return array(
-    'openid_provider_sso_welcome' => array(),
-  );
-}
-
-/**
  * Implementation of hook_menu().
  */
 function openid_provider_sso_menu() {
@@ -40,6 +31,28 @@ function openid_provider_sso_form_alter(&$form, $form_state, $form_id) {
       drupal_add_js('Drupal.settings.destination='. drupal_to_js($_GET['destination']) .';', 'inline');
     }
   }
+  if ($form_id == 'openid_provider_form') {
+    unset($form['submit_always']);
+    $form['submit_once']['#value'] = t('Log in');
+    if ($rp = openid_provider_sso_relying_party($form_state['storage']['realm'])) {
+      global $user;
+      $form['intro']['#value'] = '<div>'. t('Log in to @relying_party as @user?', array('@relying_party' => $rp['name'], '@user' => $user->name)) .'</div>';
+    }
+  }
+}
+
+/**
+ * Returns a relying party by its realm. Returns FALSE if no relying party of
+ * given realm is known. $realm may be URL encoded.
+ */
+function openid_provider_sso_relying_party($realm) {
+  $realm = trim(urldecode($realm), '/');
+  foreach (variable_get('openid_provider_sso_rps', array()) as $rp) {
+    if (trim($rp['realm'], '/') == $realm) {
+      return $rp;
+    }
+  }
+  return FALSE;
 }
 
 /**
@@ -63,13 +76,4 @@ function openid_provider_sso_relying_parties_opml() {
 
   drupal_set_header('Content-Type=text/x-opml');
   print $output;
-}
-
-/**
- * Theme welcome text on registration forms.
- *
- * @todo: expand.
- */
-function theme_openid_provider_sso_welcome($relying_party) {
-  return '<div class="sso-welcome">'. t('<p><strong>!relying_party</strong> is part of !site_name.</p><p>You can log in with your existing !site_name account or sign up for a new one.</p>', array('!relying_party' => $relying_party, '!site_name' => variable_get('site_name', 'Drupal'))) .'</div>';
 }
