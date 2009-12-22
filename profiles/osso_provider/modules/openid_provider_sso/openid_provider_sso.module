@@ -31,23 +31,6 @@ function openid_provider_sso_menu() {
 }
 
 /**
- * Implementation of hook_user().
- */
-function openid_provider_sso_user($op, &$edit, &$account) {
-  switch ($op) {
-    case 'insert':
-    case 'update':
-      // Set an alias for this user.
-      // @todo: Verify that setting path alias does not collide with pathauto.
-      path_set_alias('user/'. $account->uid .'/identity', 'openid/'. $account->name);
-      break;
-    case 'delete':
-      path_set_alias('user/'. $account->uid .'/identity');
-      break;
-  }
-}
-
-/**
  * Page callback for rendering a list of trusted sites.
  */
 function openid_provider_sso_relying_parties_opml() {
