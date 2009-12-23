@@ -95,15 +95,15 @@ function _activity_feeds_context_default_contexts() {
     'description' => '',
     'path' => array(
       'user' => 'user',
+      'user/login' => 'user/login',
       'user/password' => 'user/password',
       'user/register' => 'user/register',
-      'sso/request' => 'sso/request',
     ),
     'block' => array(
       'osso_provider_login_message' => array(
         'module' => 'osso_provider',
         'delta' => 'login_message',
-        'weight' => 10,
+        'weight' => 11,
         'region' => 'content',
         'status' => '0',
         'label' => 'Login page message',
