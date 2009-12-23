@@ -130,7 +130,7 @@ function osso_hub_bar() {
   }
   else {
     $items[] = array(
-      'data' => l(t('Log in / Sign up'), 'user'),
+      'data' => l(t('Log in / Sign up'), 'user/login'),
       'class' => 'login',
     );
   }
