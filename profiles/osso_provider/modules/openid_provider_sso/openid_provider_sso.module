@@ -13,6 +13,11 @@
  */
 function openid_provider_sso_menu() {
   $items = array();
+  $items['logout/login'] = array(
+    'page callback' => 'openid_provider_sso_logout_login',
+    'access callback' => 'user_is_logged_in',
+    'type' => MENU_CALLBACK,
+  );
   $items['sso/trusted-sites'] = array(
     'page callback' => 'openid_provider_sso_relying_parties_opml',
     'access callback' => TRUE,
@@ -32,11 +37,18 @@ function openid_provider_sso_form_alter(&$form, $form_state, $form_id) {
     }
   }
   if ($form_id == 'openid_provider_form') {
-    unset($form['submit_always']);
-    $form['submit_once']['#value'] = t('Log in');
+    // If RP is known take decisions that simplify the user's choices.
     if ($rp = openid_provider_sso_relying_party($form_state['storage']['realm'])) {
       global $user;
+      unset($form['cancel']);
+      unset($form['submit_always']);
+      $form['submit_once']['#value'] = t('Log in');
+      $form['logout_login']['#value'] = l(t('Not @user?', array('@user' => $user->name)), 'logout/login');
       $form['intro']['#value'] = '<div>'. t('Log in to @relying_party as @user?', array('@relying_party' => $rp['name'], '@user' => $user->name)) .'</div>';
+      // Cache request in session, we may need this information later
+      // in openid_provider_sso_logout_login().
+      $request = _openid_response();
+      $_SESSION['openid_provider_sso']['request'] = $request;
     }
   }
 }
@@ -76,4 +88,41 @@ function openid_provider_sso_relying_parties_opml() {
 
   drupal_set_header('Content-Type=text/x-opml');
   print $output;
+}
+
+/**
+ * Logout / login callback. Passes a RP's authentication request through a
+ * 'log in as different user'.
+ */
+function openid_provider_sso_logout_login() {
+  $request = $_SESSION['openid_provider_sso']['request'];
+
+  // +++ Begin copy from user_logout().
+  global $user;
+ 
+  watchdog('user', 'Session closed for %name.', array('%name' => $user->name));
+  
+  // Destroy the current session:
+  session_destroy();
+  // Only variables can be passed by reference workaround.
+  $null = NULL;
+  user_module_invoke('logout', $null, $user);
+
+  // Load the anonymous user
+  $user = drupal_anonymous_user();
+
+  // +++ End copy from user_logout().
+
+  // Copy RP request if available and either 'checkid_immediate' or 
+  // 'checkid_setup', redirect user to login screen and then to Provider end 
+  // point. See openid_provider_continue().
+  // THIS DOES NOT WORK, AS A NEW SESSION IS ACTUALLY ONLY CREATED WHEN THE USER
+  // REQUEST THE NEXT PAGE.
+  if (isset($request['mode'])) {
+    if (in_array($request['mode'], array('checkid_immediate', 'checkid_setup'))) {
+      $_SESSION['openid_provider']['request'] = $request;
+    }
+  }
+
+  drupal_goto('user/login', 'destination=openid/provider/continue');
 }
