@@ -191,14 +191,12 @@ function osso_provider_profile_tasks(&$task, $url) {
  * Allows the profile to alter the site-configuration form. This is
  * called through custom invocation, so $form_state is not populated.
  */
-function osso_provider_form_alter(&$form, $form_state, $form_id) {
-  if ($form_id == 'install_configure') {
-    // Set default for site name field.
-    $form['site_information']['site_name']['#default_value'] = $_SERVER['HTTP_HOST'];
-    $form['site_information']['site_mail']['#default_value'] = 'admin@'. $_SERVER['HTTP_HOST'];
-    $form['admin_account']['account']['name']['#default_value'] = 'admin';
-    $form['admin_account']['account']['mail']['#default_value'] = 'admin@'. $_SERVER['HTTP_HOST'];
-  }
+function osso_provider_form_install_configure_form_alter(&$form, $form_state) {
+  // Set default for site name field.
+  $form['site_information']['site_name']['#default_value'] = $_SERVER['HTTP_HOST'];
+  $form['site_information']['site_mail']['#default_value'] = 'admin@'. $_SERVER['HTTP_HOST'];
+  $form['admin_account']['account']['name']['#default_value'] = 'admin';
+  $form['admin_account']['account']['mail']['#default_value'] = 'admin@'. $_SERVER['HTTP_HOST'];
 }
 
 /**
