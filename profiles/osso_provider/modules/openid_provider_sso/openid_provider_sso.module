@@ -38,10 +38,6 @@ function openid_provider_sso_form_alter(&$form, $form_state, $form_id) {
       unset($form['submit_always']);
       $form['submit_once']['#value'] = t('Log in');
       $form['intro']['#value'] = '<div>'. t('Log in to @relying_party as @user?', array('@relying_party' => $rp['name'], '@user' => $user->name)) .'</div>';
-      // Cache request in session, we may need this information later
-      // in openid_provider_sso_logout_login().
-      $request = _openid_response();
-      $_SESSION['openid_provider_sso']['request'] = $request;
     }
   }
 }
